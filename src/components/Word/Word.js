@@ -16,7 +16,6 @@ const Word = ({ input, submit }) => (
       </div>
       <div className="w3-container w3-twothird">
         <input
-
           type="text"
           className="w3-input w3-margin-top"
           onKeyUp={submit}
