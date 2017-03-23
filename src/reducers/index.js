@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux'
 import test from './test'
+import word from './word'
 
 const reducer = combineReducers({
-  test,
+  word,
 })
 
 export default reducer
