@@ -1,18 +1,19 @@
 // const TEST = 'test/TEST'
 
 const initialState = {
-  input: 'test',
+  input: '',
 }
 const wordSubmit = () => ({
   type: 'SUBMIT',
 })
 
 const reducer = (state = initialState, { type }) => {
+  console.log(state.input)
+  console.log(type)
   switch (type) {
     case 'SUBMIT': {
       return {
         ...state,
-        input: state.input,
       }
     }
     default: {
