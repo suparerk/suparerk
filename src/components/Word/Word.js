@@ -7,10 +7,8 @@ const propTypes = {
   submit: func.isRequired,
 }
 
-
 const Word = ({ input, submit }) => {
   const handleInput = (e) => {
-    console.log(e.target.value)
     submit(e.target.value)
   }
   return (
