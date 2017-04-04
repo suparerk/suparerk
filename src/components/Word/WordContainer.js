@@ -5,15 +5,34 @@ import * as wordActions from '../../reducers/word'
 
 import Word from './Word'
 
-const { string, func } = PropTypes
+const { array, func, object, string } = PropTypes
 const propTypes = {
+  initialize: func.isRequired,
   input: string.isRequired,
+  inputArray: array.isRequired,
+  originalWord: string.isRequired,
+  shuffled: array.isRequired,
   wordSubmit: func.isRequired,
 }
-
-const WordContainer = ({ input, wordSubmit }) => (
-  <Word input={input} submit={wordSubmit} />
-)
+class WordContainer extends React.Component {
+  componentDidMount() {
+    this.props.initialize(this.props.originalWord)
+  }
+  render() {
+    return (
+      <Word
+        input={this.props.input}
+        inputArray={this.props.inputArray}
+        originalWord={this.props.originalWord}
+        shuffled={this.props.shuffled}
+        submit={this.props.wordSubmit}
+      />
+    )
+  }
+}
+// const WordContainer = ({ input, wordSubmit }) => (
+//   <Word input={input} submit={wordSubmit} />
+// )
 
 WordContainer.propTypes = propTypes
 

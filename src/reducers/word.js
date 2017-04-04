@@ -1,19 +1,56 @@
-// const TEST = 'test/TEST'
+import shuffle from 'lodash/shuffle'
+// import includes from 'lodash/includes'
+
+
+const SUBMIT = 'submit/SUBMIT'
+const INIT = 'init/INIT'
 
 const initialState = {
-  input: 'test',
+  input: '',
+  inputArray: [],
+  shuffled: [],
+
 }
-export const wordSubmit = input => ({
-  type: 'WORD_SUBMIT',
-  input,
+
+const wordSubmit = input => ({
+  type: SUBMIT,
+  payload: {
+    input,
+  },
 })
 
-const reducer = (state = initialState, { type, input }) => {
+const initialize = originalWord => ({
+  type: INIT,
+  payload: {
+    originalWord,
+  },
+})
+
+const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
-    case 'WORD_SUBMIT': {
+    case INIT: {
+      const { originalWord } = payload
+      return {
+        ...state,
+        originalWord,
+        shuffled: shuffle(originalWord),
+      }
+    }
+    case SUBMIT: {
+      const { input } = payload
+      const checkInput = (userInput, originalWord) => {
+        const inputArray = userInput.split('')
+        const wordArray = originalWord.split('')
+        return (
+          inputArray.map((letter, index) => ({
+            letter, check: letter === wordArray[index] })
+          )
+        )
+      }
       return {
         ...state,
         input,
+        inputArray: checkInput(input, state.originalWord),
       }
     }
     default: {
@@ -21,5 +58,9 @@ const reducer = (state = initialState, { type, input }) => {
     }
   }
 }
-
+export {
+  initialState,
+  initialize,
+  wordSubmit,
+}
 export default reducer

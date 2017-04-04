@@ -1,13 +1,25 @@
 import React, { PropTypes } from 'react'
 
-const { string, func } = PropTypes
+const { array, func, string } = PropTypes
 
 const propTypes = {
   input: string.isRequired,
+  inputArray: array.isRequired,
+  shuffled: array.isRequired,
   submit: func.isRequired,
 }
 
-const Word = ({ input, submit }) => {
+const Letter = ({ letter }) => {
+  return (
+    <span className="card">{letter}</span>
+  )
+}
+
+const Word = ({
+  input,
+  inputArray,
+  shuffled,
+  submit }) => {
   const handleInput = (e) => {
     submit(e.target.value)
   }
@@ -25,7 +37,20 @@ const Word = ({ input, submit }) => {
           />
         </div>
       </div>
-      <h2>{input}</h2>
+      <div className="flex">
+        {shuffled.map((letter, index) =>
+          <Letter
+            key={index}
+            letter={letter}
+          />)}
+      </div>
+      <div className="flex">
+        {inputArray.map(({ letter }, index) =>
+          <Letter
+            key={index}
+            letter={letter}
+          />)}
+      </div>
     </div>
   )
 }
