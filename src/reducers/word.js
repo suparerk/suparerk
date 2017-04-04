@@ -9,7 +9,6 @@ const initialState = {
   input: '',
   inputArray: [],
   shuffled: [],
-
 }
 
 const wordSubmit = input => ({
@@ -30,27 +29,24 @@ const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case INIT: {
       const { originalWord } = payload
+      const shuffled = shuffle(originalWord)
       return {
         ...state,
         originalWord,
-        shuffled: shuffle(originalWord),
+        shuffled,
       }
     }
     case SUBMIT: {
-      const { input } = payload
-      const checkInput = (userInput, originalWord) => {
-        const inputArray = userInput.split('')
-        const wordArray = originalWord.split('')
-        return (
-          inputArray.map((letter, index) => ({
-            letter, check: letter === wordArray[index] })
-          )
-        )
-      }
+      const input = payload.input.toLowerCase()
+      const { originalWord } = state
+      const inputArray = input.split('').map((letter, index) => ({
+        letter,
+        check: letter === originalWord[index],
+      }))
       return {
         ...state,
         input,
-        inputArray: checkInput(input, state.originalWord),
+        inputArray,
       }
     }
     default: {
@@ -58,9 +54,11 @@ const reducer = (state = initialState, { type, payload }) => {
     }
   }
 }
+
 export {
   initialState,
   initialize,
   wordSubmit,
 }
+
 export default reducer
