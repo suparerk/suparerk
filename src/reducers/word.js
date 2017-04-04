@@ -1,15 +1,22 @@
 import shuffle from 'lodash/shuffle'
 // import includes from 'lodash/includes'
 
-
-const SUBMIT = 'submit/SUBMIT'
 const INIT = 'init/INIT'
+const MARK = 'mark/MARK'
+const SUBMIT = 'submit/SUBMIT'
 
 const initialState = {
   input: '',
   inputArray: [],
   shuffled: [],
 }
+
+const initialize = originalWord => ({
+  type: INIT,
+  payload: {
+    originalWord,
+  },
+})
 
 const wordSubmit = input => ({
   type: SUBMIT,
@@ -18,11 +25,9 @@ const wordSubmit = input => ({
   },
 })
 
-const initialize = originalWord => ({
-  type: INIT,
-  payload: {
-    originalWord,
-  },
+const markIt = () => ({
+  type: MARK,
+  payload: {},
 })
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -39,14 +44,25 @@ const reducer = (state = initialState, { type, payload }) => {
     case SUBMIT: {
       const input = payload.input.toLowerCase()
       const { originalWord } = state
-      const inputArray = input.split('').map((letter, index) => ({
+      const inputArray = input.split('').map(letter => ({
         letter,
-        check: letter === originalWord[index],
       }))
       return {
         ...state,
         input,
         inputArray,
+      }
+    }
+    case MARK: {
+      const { originalWord } = state
+      const { inputArray } = state
+      const marked = inputArray.map(({ letter }, index) => ({
+        letter,
+        check: letter === originalWord[index],
+      }))
+      return {
+        ...state,
+        inputArray: marked,
       }
     }
     default: {
@@ -58,6 +74,7 @@ const reducer = (state = initialState, { type, payload }) => {
 export {
   initialState,
   initialize,
+  markIt,
   wordSubmit,
 }
 

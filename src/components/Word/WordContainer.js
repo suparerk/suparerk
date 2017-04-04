@@ -10,6 +10,7 @@ const propTypes = {
   initialize: func.isRequired,
   input: string.isRequired,
   inputArray: array.isRequired,
+  markIt: func.isRequired,
   originalWord: string.isRequired,
   shuffled: array.isRequired,
   wordSubmit: func.isRequired,
@@ -23,6 +24,7 @@ class WordContainer extends React.Component {
       <Word
         input={this.props.input}
         inputArray={this.props.inputArray}
+        markIt={this.props.markIt}
         originalWord={this.props.originalWord}
         shuffled={this.props.shuffled}
         submit={this.props.wordSubmit}

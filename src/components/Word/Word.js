@@ -5,8 +5,10 @@ const { array, func, string } = PropTypes
 const propTypes = {
   input: string.isRequired,
   inputArray: array.isRequired,
+  markIt: func.isRequired,
   shuffled: array.isRequired,
   submit: func.isRequired,
+
 }
 
 const colors = {
@@ -18,11 +20,16 @@ const Letter = ({ letter, check }) => (
   <span className={`card ${colors[check]}`}>{letter}</span>
 )
 
+const MarkButton = ({markIt}) => (
+  <button onClick={markIt}>Mark</button>
+)
+
 const Word = ({
   input,
   inputArray,
   shuffled,
   submit,
+  markIt,
 }) => (
   <div className="App w3-content w3-padding-128">
     <div className="w3-row-padding">
@@ -45,13 +52,16 @@ const Word = ({
         />)}
     </div>
     <div className="flex">
-      {inputArray.map(({ letter, check }, index) =>
+      {inputArray.map(({letter, check}, index) =>
         <Letter
           key={index}
           letter={letter}
           check={check}
         />)}
     </div>
+    <MarkButton
+      markIt={markIt}
+    />
   </div>
 )
 
