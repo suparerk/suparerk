@@ -1,6 +1,7 @@
 import reducer, {
-  initialState,
   initialize,
+  initialState,
+  markIt,
   wordSubmit,
 } from './word'
 
@@ -33,28 +34,44 @@ describe('reducers/word', () => {
   describe('submit actions', () => {
     const initial = reducer(initialState, initialize('family'))
 
-    it('return check false', () => {
-      const action = wordSubmit('t')
+    it('return input array', () => {
+      const action = wordSubmit('test')
       const actual = reducer(initial, action)
       const expected = {
-        inputArray: [{
-          check: false,
-          letter: 't',
-        }],
+        inputArray: [
+          {"letter": "t"},
+          {"letter": "e"},
+          {"letter": "s"},
+          {"letter": "t"}]
+      }
+      expect(actual.inputArray).toEqual(expected.inputArray)
+    })
+  })
+
+  describe('mark actions', () => {
+    const initial = reducer(initialState, initialize('family'))
+
+    it('return check false', () => {
+      const submit = reducer(initial, wordSubmit('t'))
+      const action = markIt()
+      const actual = reducer(submit, action)
+      const expected = {
+        inputArray: [
+          {"letter": "t", check: false},]
       }
       expect(actual.inputArray).toEqual(expected.inputArray)
     })
 
     it('return check true', () => {
-      const action = wordSubmit('f')
-      const actual = reducer(initial, action)
+      const submit = reducer(initial, wordSubmit('f'))
+      const action = markIt()
+      const actual = reducer(submit, action)
       const expected = {
-        inputArray: [{
-          check: true,
-          letter: 'f',
-        }],
+        inputArray: [
+          {"letter": "f", check: true},]
       }
       expect(actual.inputArray).toEqual(expected.inputArray)
     })
   })
+
 })

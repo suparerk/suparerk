@@ -20,7 +20,7 @@ const Letter = ({ letter, check }) => (
   <span className={`card ${colors[check]}`}>{letter}</span>
 )
 
-const MarkButton = ({markIt}) => (
+const MarkButton = ({  markIt  }) => (
   <button onClick={markIt}>Mark</button>
 )
 
@@ -52,7 +52,7 @@ const Word = ({
         />)}
     </div>
     <div className="flex">
-      {inputArray.map(({letter, check}, index) =>
+      {inputArray.map(({ letter, check }, index) =>
         <Letter
           key={index}
           letter={letter}

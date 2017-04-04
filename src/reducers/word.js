@@ -72,8 +72,8 @@ const reducer = (state = initialState, { type, payload }) => {
 }
 
 export {
-  initialState,
   initialize,
+  initialState,
   markIt,
   wordSubmit,
 }
