@@ -7,18 +7,14 @@ import Word from './Word'
 
 const { array, func, object, string } = PropTypes
 const propTypes = {
-  // initialize: func.isRequired,
-  // input: string.isRequired,
-  // inputArray: array.isRequired,
-  // markIt: func.isRequired,
-  // shuffled: array.isRequired,
-  // now: object.isRequired,
   originalWord: string.isRequired,
   cards: object.isRequired,
   available: array.isRequired,
   placed: array.isRequired,
   initialize: func.isRequired,
   letterSubmit: func.isRequired,
+  markIt: func.isRequired,
+  deleteIt: func.isRequired,
 }
 class WordContainer extends React.Component {
   constructor() {
@@ -32,7 +28,13 @@ class WordContainer extends React.Component {
   }
 
   handleKeyDown({ key }) {
-    this.props.letterSubmit(key)
+    if (key === 'Enter') {
+      this.props.markIt(key)
+    } else if (key === 'Backspace') {
+      this.props.deleteIt(key)
+    } else {
+      this.props.letterSubmit(key)
+    }
   }
 
   render() {

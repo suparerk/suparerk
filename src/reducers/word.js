@@ -4,13 +4,15 @@ import find from 'lodash/find'
 
 
 const INIT = 'init/INIT'
+const DELETE = 'delete/DELETE'
+const MARK = 'mark/MARK'
 const SUBMIT = 'submit/SUBMIT'
 
 
 const initialState = {
   now: {
-    available: [1, 2, 3],
-    placed: [4, 5, 6],
+    available: [2, 3, 4, 5],
+    placed: [6, 1],
     cards: {
       1: { id: 1, letter: 'a', state: undefined },
       2: { id: 2, letter: 'm', state: undefined },
@@ -22,9 +24,28 @@ const initialState = {
   },
   history: [
     {
-      available: [],
+      available: [1, 2, 3, 4, 5, 6],
       placed: [],
-      cards: {},
+      cards: {
+        1: { id: 1, letter: 'a', state: undefined },
+        2: { id: 2, letter: 'm', state: undefined },
+        3: { id: 3, letter: 'i', state: undefined },
+        4: { id: 4, letter: 'l', state: undefined },
+        5: { id: 5, letter: 'y', state: undefined },
+        6: { id: 6, letter: 'f', state: undefined },
+      },
+    },
+    {
+      available: [1, 2, 3, 4, 5],
+      placed: [6],
+      cards: {
+        1: { id: 1, letter: 'a', state: undefined },
+        2: { id: 2, letter: 'm', state: undefined },
+        3: { id: 3, letter: 'i', state: undefined },
+        4: { id: 4, letter: 'l', state: undefined },
+        5: { id: 5, letter: 'y', state: undefined },
+        6: { id: 6, letter: 'f', state: undefined },
+      },
     },
   ],
 }
@@ -42,6 +63,16 @@ const letterSubmit = letter => ({
   payload: {
     letter,
   },
+})
+
+const deleteIt = () => ({
+  type: DELETE,
+  payload: {},
+})
+
+const markIt = () => ({
+  type: MARK,
+  payload: {},
 })
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -62,16 +93,32 @@ const reducer = (state = initialState, { type, payload }) => {
       const { available, cards, placed } = state.now
       const availableCards = pick(cards, available)
       const card = find(availableCards, c => c.letter === letter)
-      if(card) {
+      if (card) {
+        const now = {
+          ...state.now,
+          placed: placed.concat(card.id),
+          available: available.filter(x => x !== card.id),
+        }
         return {
           ...state,
-          now: {
-            ...state.now,
-            placed: placed.concat(card.id),
-            available: available.filter(x => x !== card.id),
-          }
+          now,
+          history: state.history.concat(state.now),
         }
       }
+      return state
+    }
+    case DELETE: {
+      if (state.history.length) {
+        const previousState = state.history.pop()
+        return {
+          ...state,
+          now: previousState,
+        }
+      }
+
+      return state
+    }
+    case MARK: {
       return state
     }
     default: {
@@ -84,6 +131,8 @@ export {
   initialize,
   initialState,
   letterSubmit,
+  deleteIt,
+  markIt,
 }
 
 export default reducer
