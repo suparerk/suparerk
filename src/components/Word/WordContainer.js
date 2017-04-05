@@ -17,9 +17,11 @@ const propTypes = {
   originalWord: string.isRequired,
   placed: array.isRequired,
 }
+
 const defaultProps = {
   completed: undefined,
 }
+
 class WordContainer extends React.Component {
   constructor() {
     super()

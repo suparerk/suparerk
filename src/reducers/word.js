@@ -21,7 +21,6 @@ const initialState = {
   ],
 }
 
-
 const initialize = originalWord => ({
   type: INIT,
   payload: {
@@ -53,17 +52,16 @@ const reducer = (state = initialState, { type, payload }) => {
       const shuffled = shuffle(originalWord.split(''))
       const createCard = (a, letter, index) => {
         return {
-        ...a,
-        [index]:
-        {
-          id: index,
-          letter,
-          state: undefined,
-        }
+          ...a,
+          [index]:
+          {
+            id: index,
+            letter,
+            state: undefined,
+          },
         }
       }
       const cardsObject = shuffled.reduce(createCard, {})
-      console.log(cardsObject)
       return {
         ...initialState,
         now: {
