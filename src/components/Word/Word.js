@@ -28,6 +28,7 @@ const MarkButton = ({ markIt }) => (
 
 const Word = ({
   cards,
+  completed,
   available,
   placed,
 }) => (
@@ -36,6 +37,7 @@ const Word = ({
       <div className="w3-container w3-twothird">
       </div>
     </div>
+    {JSON.stringify(completed)}
     <div className="flex">
       {available.map(id =>
         <Letter

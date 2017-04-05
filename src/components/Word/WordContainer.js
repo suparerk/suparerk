@@ -5,7 +5,7 @@ import * as wordActions from '../../reducers/word'
 
 import Word from './Word'
 
-const { array, func, object, string } = PropTypes
+const { array, bool, func, object, string } = PropTypes
 const propTypes = {
   originalWord: string.isRequired,
   cards: object.isRequired,
@@ -38,7 +38,7 @@ class WordContainer extends React.Component {
   }
 
   render() {
-    const { cards, placed, available } = this.props
+    const { cards, placed, available, completed } = this.props
 
     return (
       <Word
@@ -46,6 +46,7 @@ class WordContainer extends React.Component {
         cards={cards}
         available={available}
         placed={placed}
+        completed={completed}
       />
     )
   }

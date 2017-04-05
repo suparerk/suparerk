@@ -2,6 +2,8 @@
 import pick from 'lodash/pick'
 import find from 'lodash/find'
 import reduce from 'lodash/reduce'
+import every from 'lodash/every'
+
 
 const INIT = 'init/INIT'
 const DELETE = 'delete/DELETE'
@@ -120,9 +122,8 @@ const reducer = (state = initialState, { type, payload }) => {
     }
     case MARK: {
       const { originalWord } = state
-      const { placed, cards } = state.now
+      const { placed, cards, available } = state.now
       const placedCards = pick(cards, placed)
-      console.log(placedCards)
       if (placedCards) {
         const checkCardState = (a, id, i) => {
           const card = cards[id]
@@ -130,13 +131,13 @@ const reducer = (state = initialState, { type, payload }) => {
             ...a,
             [id]: {
               ...card,
-              state: card.letter === originalWord[i]
-            }
+              state: card.letter === originalWord[i],
+            },
           }
         }
         const checkedCards = reduce(placed, checkCardState, {})
-        console.log("CHECKED")
-        console.log(checkedCards)
+        console.log(every(placed.state, true))
+        const completed = available.length === 0 && placed.length && every(placedCards, ['state', true])
         return {
           ...state,
           now: {
@@ -144,8 +145,10 @@ const reducer = (state = initialState, { type, payload }) => {
             cards: {
               ...cards,
               ...checkedCards,
-            }
-          }
+            },
+            completed: completed,
+          },
+
         }
       }
       return state
