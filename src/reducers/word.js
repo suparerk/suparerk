@@ -1,9 +1,8 @@
-// import shuffle from 'lodash/shuffle'
-import pick from 'lodash/pick'
-import find from 'lodash/find'
-import reduce from 'lodash/reduce'
 import every from 'lodash/every'
-
+import find from 'lodash/find'
+import pick from 'lodash/pick'
+import reduce from 'lodash/reduce'
+import shuffle from 'lodash/shuffle'
 
 const INIT = 'init/INIT'
 const DELETE = 'delete/DELETE'
@@ -13,43 +12,12 @@ const SUBMIT = 'submit/SUBMIT'
 
 const initialState = {
   now: {
-    available: [2, 3, 4, 5, 6, 1],
+    completed: undefined,
+    available: [],
     placed: [],
-    cards: {
-      1: { id: 1, letter: 'a', state: undefined },
-      2: { id: 2, letter: 'm', state: undefined },
-      3: { id: 3, letter: 'i', state: undefined },
-      4: { id: 4, letter: 'l', state: undefined },
-      5: { id: 5, letter: 'y', state: undefined },
-      6: { id: 6, letter: 'f', state: undefined },
-    },
-    completed: false,
+    cards: {},
   },
   history: [
-    {
-      available: [1, 2, 3, 4, 5, 6],
-      placed: [],
-      cards: {
-        1: { id: 1, letter: 'a', state: undefined },
-        2: { id: 2, letter: 'm', state: undefined },
-        3: { id: 3, letter: 'i', state: undefined },
-        4: { id: 4, letter: 'l', state: undefined },
-        5: { id: 5, letter: 'y', state: undefined },
-        6: { id: 6, letter: 'f', state: undefined },
-      },
-    },
-    {
-      available: [1, 2, 3, 4, 5],
-      placed: [6],
-      cards: {
-        1: { id: 1, letter: 'a', state: undefined },
-        2: { id: 2, letter: 'm', state: undefined },
-        3: { id: 3, letter: 'i', state: undefined },
-        4: { id: 4, letter: 'l', state: undefined },
-        5: { id: 5, letter: 'y', state: undefined },
-        6: { id: 6, letter: 'f', state: undefined },
-      },
-    },
   ],
 }
 
@@ -82,13 +50,28 @@ const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case INIT: {
       const { originalWord } = payload
-      const now = state.now
-      // const shuffled = shuffle(originalWord)
+      const shuffled = shuffle(originalWord.split(''))
+      const createCard = (a, letter, index) => {
+        return {
+        ...a,
+        [index]:
+        {
+          id: index,
+          letter,
+          state: undefined,
+        }
+        }
+      }
+      const cardsObject = shuffled.reduce(createCard, {})
+      console.log(cardsObject)
       return {
         ...initialState,
-        now,
+        now: {
+          ...state.now,
+          available: shuffled.map((id, index) => index),
+          cards: cardsObject,
+        },
         originalWord,
-        // shuffled,
       }
     }
     case SUBMIT: {

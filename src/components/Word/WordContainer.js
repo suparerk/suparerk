@@ -9,13 +9,16 @@ const { array, bool, func, object, string } = PropTypes
 const propTypes = {
   available: array.isRequired,
   cards: object.isRequired,
-  completed: bool.isRequired,
+  completed: bool,
   deleteIt: func.isRequired,
   initialize: func.isRequired,
   letterSubmit: func.isRequired,
   markIt: func.isRequired,
   originalWord: string.isRequired,
   placed: array.isRequired,
+}
+const defaultProps = {
+  completed: undefined,
 }
 class WordContainer extends React.Component {
   constructor() {
@@ -53,6 +56,7 @@ class WordContainer extends React.Component {
 }
 
 WordContainer.propTypes = propTypes
+WordContainer.defaultProps = defaultProps
 
 const mapState = state => state.word.now
 const bindActions = dispatch => bindActionCreators(wordActions, dispatch)

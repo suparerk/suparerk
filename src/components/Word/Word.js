@@ -5,8 +5,12 @@ const { array, bool, object } = PropTypes
 const propTypes = {
   available: array.isRequired,
   cards: object.isRequired,
-  completed: bool.isRequired,
+  completed: bool,
   placed: array.isRequired,
+}
+
+const defaultProps = {
+  completed: undefined,
 }
 
 const colors = {
@@ -48,6 +52,6 @@ const Word = ({
 )
 
 Word.propTypes = propTypes
-
+Word.defaultProps = defaultProps
 
 export default Word
