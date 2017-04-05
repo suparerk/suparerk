@@ -7,14 +7,15 @@ import Word from './Word'
 
 const { array, bool, func, object, string } = PropTypes
 const propTypes = {
-  originalWord: string.isRequired,
-  cards: object.isRequired,
   available: array.isRequired,
-  placed: array.isRequired,
+  cards: object.isRequired,
+  completed: bool.isRequired,
+  deleteIt: func.isRequired,
   initialize: func.isRequired,
   letterSubmit: func.isRequired,
   markIt: func.isRequired,
-  deleteIt: func.isRequired,
+  originalWord: string.isRequired,
+  placed: array.isRequired,
 }
 class WordContainer extends React.Component {
   constructor() {
@@ -42,7 +43,6 @@ class WordContainer extends React.Component {
 
     return (
       <Word
-        // originalWord={this.props.originalWord}
         cards={cards}
         available={available}
         placed={placed}
@@ -51,9 +51,6 @@ class WordContainer extends React.Component {
     )
   }
 }
-// const WordContainer = ({ input, wordSubmit }) => (
-//   <Word input={input} submit={wordSubmit} />
-// )
 
 WordContainer.propTypes = propTypes
 

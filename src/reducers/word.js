@@ -23,6 +23,7 @@ const initialState = {
       5: { id: 5, letter: 'y', state: undefined },
       6: { id: 6, letter: 'f', state: undefined },
     },
+    completed: false,
   },
   history: [
     {
@@ -136,7 +137,6 @@ const reducer = (state = initialState, { type, payload }) => {
           }
         }
         const checkedCards = reduce(placed, checkCardState, {})
-        console.log(every(placed.state, true))
         const completed = available.length === 0 && placed.length && every(placedCards, ['state', true])
         return {
           ...state,
@@ -146,7 +146,7 @@ const reducer = (state = initialState, { type, payload }) => {
               ...cards,
               ...checkedCards,
             },
-            completed: completed,
+            completed,
           },
 
         }
