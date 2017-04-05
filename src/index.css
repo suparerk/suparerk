@@ -3,3 +3,21 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+.flex {
+  display: flex;
+  margin: 1rem;
+}
+.card {
+  padding: 1rem;
+  font-size: 3rem;
+  margin: 0.25rem;
+  background: #f3f3f3;
+  width: 7rem;
+  text-align: center;
+}
+.green {
+  background-color: green;
+}
+.red {
+  background-color: red;
+}
