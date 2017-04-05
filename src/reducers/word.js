@@ -1,7 +1,7 @@
 // import shuffle from 'lodash/shuffle'
 import pick from 'lodash/pick'
 import find from 'lodash/find'
-
+import reduce from 'lodash/reduce'
 
 const INIT = 'init/INIT'
 const DELETE = 'delete/DELETE'
@@ -11,8 +11,8 @@ const SUBMIT = 'submit/SUBMIT'
 
 const initialState = {
   now: {
-    available: [2, 3, 4, 5],
-    placed: [6, 1],
+    available: [2, 3, 4, 5, 6, 1],
+    placed: [],
     cards: {
       1: { id: 1, letter: 'a', state: undefined },
       2: { id: 2, letter: 'm', state: undefined },
@@ -119,6 +119,35 @@ const reducer = (state = initialState, { type, payload }) => {
       return state
     }
     case MARK: {
+      const { originalWord } = state
+      const { placed, cards } = state.now
+      const placedCards = pick(cards, placed)
+      console.log(placedCards)
+      if (placedCards) {
+        const checkCardState = (a, id, i) => {
+          const card = cards[id]
+          return {
+            ...a,
+            [id]: {
+              ...card,
+              state: card.letter === originalWord[i]
+            }
+          }
+        }
+        const checkedCards = reduce(placed, checkCardState, {})
+        console.log("CHECKED")
+        console.log(checkedCards)
+        return {
+          ...state,
+          now: {
+            ...state.now,
+            cards: {
+              ...cards,
+              ...checkedCards,
+            }
+          }
+        }
+      }
       return state
     }
     default: {

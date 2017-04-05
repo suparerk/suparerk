@@ -41,18 +41,19 @@ const Word = ({
         <Letter
           key={id}
           {...cards[id]}
-        />)}
+        />)
+      }
     </div>
+    <hr />
     <div className="flex">
       {placed.map(id =>
         <Letter
           key={id}
           {...cards[id]}
-        />)}
+        />)
+      }
     </div>
-    {/* <MarkButton
-      markIt={markIt}
-    /> */}
+
   </div>
 )
 
