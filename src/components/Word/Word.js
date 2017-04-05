@@ -1,13 +1,15 @@
 import React, { PropTypes } from 'react'
 
-const { array, func, string } = PropTypes
+const { array, func, string, object } = PropTypes
 
 const propTypes = {
-  input: string.isRequired,
-  inputArray: array.isRequired,
-  markIt: func.isRequired,
-  shuffled: array.isRequired,
-  submit: func.isRequired,
+  cards: object.isRequired,
+  available: array.isRequired,
+  placed: array.isRequired,
+  // input: string.isRequired,
+  // inputArray: array.isRequired,
+  // markIt: func.isRequired,
+  // shuffled: array.isRequired,
 
 }
 
@@ -16,52 +18,41 @@ const colors = {
   false: 'red',
 }
 
-const Letter = ({ letter, check }) => (
-  <span className={`card ${colors[check]}`}>{letter}</span>
+const Letter = ({ letter, state }) => (
+  <span className={`card ${colors[state]}`}>{letter}</span>
 )
 
-const MarkButton = ({  markIt  }) => (
+const MarkButton = ({ markIt }) => (
   <button onClick={markIt}>Mark</button>
 )
 
 const Word = ({
-  input,
-  inputArray,
-  shuffled,
-  submit,
-  markIt,
+  cards,
+  available,
+  placed,
 }) => (
   <div className="App w3-content w3-padding-128">
     <div className="w3-row-padding">
-      <div className="w3-pink w3-container w3-third">
-        <h1>Your word here:</h1>
-      </div>
       <div className="w3-container w3-twothird">
-        <input
-          type="text"
-          className="w3-input w3-margin-top"
-          onChange={e => submit(e.target.value)}
-        />
       </div>
     </div>
     <div className="flex">
-      {shuffled.map((letter, index) =>
+      {available.map(id =>
         <Letter
-          key={index}
-          letter={letter}
+          key={id}
+          {...cards[id]}
         />)}
     </div>
     <div className="flex">
-      {inputArray.map(({ letter, check }, index) =>
+      {placed.map(id =>
         <Letter
-          key={index}
-          letter={letter}
-          check={check}
+          key={id}
+          {...cards[id]}
         />)}
     </div>
-    <MarkButton
+    {/* <MarkButton
       markIt={markIt}
-    />
+    /> */}
   </div>
 )
 

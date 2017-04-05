@@ -1,15 +1,34 @@
-import shuffle from 'lodash/shuffle'
-// import includes from 'lodash/includes'
+// import shuffle from 'lodash/shuffle'
+import pick from 'lodash/pick'
+import find from 'lodash/find'
+
 
 const INIT = 'init/INIT'
-const MARK = 'mark/MARK'
 const SUBMIT = 'submit/SUBMIT'
 
+
 const initialState = {
-  input: '',
-  inputArray: [],
-  shuffled: [],
+  now: {
+    available: [1, 2, 3],
+    placed: [4, 5, 6],
+    cards: {
+      1: { id: 1, letter: 'a', state: undefined },
+      2: { id: 2, letter: 'm', state: undefined },
+      3: { id: 3, letter: 'i', state: undefined },
+      4: { id: 4, letter: 'l', state: undefined },
+      5: { id: 5, letter: 'y', state: undefined },
+      6: { id: 6, letter: 'f', state: undefined },
+    },
+  },
+  history: [
+    {
+      available: [],
+      placed: [],
+      cards: {},
+    },
+  ],
 }
+
 
 const initialize = originalWord => ({
   type: INIT,
@@ -18,52 +37,42 @@ const initialize = originalWord => ({
   },
 })
 
-const wordSubmit = input => ({
+const letterSubmit = letter => ({
   type: SUBMIT,
   payload: {
-    input,
+    letter,
   },
-})
-
-const markIt = () => ({
-  type: MARK,
-  payload: {},
 })
 
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case INIT: {
       const { originalWord } = payload
-      const shuffled = shuffle(originalWord)
+      const now = state.now
+      // const shuffled = shuffle(originalWord)
       return {
-        ...state,
+        ...initialState,
+        now,
         originalWord,
-        shuffled,
+        // shuffled,
       }
     }
     case SUBMIT: {
-      const input = payload.input.toLowerCase()
-      const { originalWord } = state
-      const inputArray = input.split('').map(letter => ({
-        letter,
-      }))
-      return {
-        ...state,
-        input,
-        inputArray,
+      const { letter } = payload
+      const { available, cards, placed } = state.now
+      const availableCards = pick(cards, available)
+      const card = find(availableCards, c => c.letter === letter)
+      if(card) {
+        return {
+          ...state,
+          now: {
+            ...state.now,
+            placed: placed.concat(card.id),
+            available: available.filter(x => x !== card.id),
+          }
+        }
       }
-    }
-    case MARK: {
-      const { originalWord } = state
-      const { inputArray } = state
-      const marked = inputArray.map(({ letter }, index) => ({
-        letter,
-        check: letter === originalWord[index],
-      }))
-      return {
-        ...state,
-        inputArray: marked,
-      }
+      return state
     }
     default: {
       return state
@@ -74,8 +83,7 @@ const reducer = (state = initialState, { type, payload }) => {
 export {
   initialize,
   initialState,
-  markIt,
-  wordSubmit,
+  letterSubmit,
 }
 
 export default reducer
