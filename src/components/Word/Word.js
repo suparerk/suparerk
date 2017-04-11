@@ -1,5 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 import Card from '../Card'
+import Slot from '../Slot'
+import map from 'lodash/map'
+
 
 const { array, bool, object } = PropTypes
 
@@ -29,13 +32,26 @@ class Word extends Component {
           }
         </div>
         <hr />
+          {/* <div className="flex">
+            {placed.map(id =>
+              <Slot>
+                <Card
+                  key={id}
+                  {...cards[id]}
+                />
+              </Slot>
+            )}
+          </div>
+        <hr /> */}
         <div className="flex">
-          {placed.map(id =>
-            <Card
-              key={id}
-              {...cards[id]}
-            />)
-          }
+          {map(cards, (id,index) =>
+            <Slot
+            >
+              <Card
+                {...cards[placed[index]]}
+              />
+            </Slot>
+          )}
         </div>
       </div>
     )
