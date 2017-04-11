@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import { DragSource } from 'react-dnd'
+import Card from '../Card'
 
 const { array, bool, object } = PropTypes
 
@@ -14,35 +14,6 @@ const defaultProps = {
   completed: undefined,
 }
 
-const letterSource = {
-  canDrag(props) {
-    // You can disallow drag based on props
-    return props.draggable
-  },
-  beginDrag(props) {
-    // Return the data describing the dragged item
-    const { id } = props
-    return { id }
-  },
-}
-
-function collect(connect, monitor) {
-  return {
-    connectDragSource: connect.dragSource(),
-    canDrag: monitor.canDrag(),
-    isDragging: monitor.isDragging(),
-  }
-}
-
-const colors = {
-  true: 'green',
-  false: 'red',
-}
-
-const Letter = ({ letter, state }) => (
-  <span className={`card ${colors[state]}`}>{letter}</span>
-)
-
 class Word extends Component {
   render() {
     const { available, cards, completed, placed } = this.props
@@ -51,7 +22,7 @@ class Word extends Component {
         {JSON.stringify(completed)}
         <div className="flex">
           {available.map(id =>
-            <Letter
+            <Card
               key={id}
               {...cards[id]}
             />)
@@ -60,7 +31,7 @@ class Word extends Component {
         <hr />
         <div className="flex">
           {placed.map(id =>
-            <Letter
+            <Card
               key={id}
               {...cards[id]}
             />)
