@@ -2,6 +2,8 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as wordActions from '../../reducers/word'
+import HTML5Backend from 'react-dnd-html5-backend'
+import { DragDropContext } from 'react-dnd'
 
 import Word from './Word'
 
@@ -62,4 +64,5 @@ WordContainer.defaultProps = defaultProps
 
 const mapState = state => state.word.now
 const bindActions = dispatch => bindActionCreators(wordActions, dispatch)
-export default connect(mapState, bindActions)(WordContainer)
+const mapReducer = connect(mapState, bindActions)(WordContainer)
+export default DragDropContext(HTML5Backend)(mapReducer)
