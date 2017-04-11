@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import * as wordActions from '../../reducers/word'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContext } from 'react-dnd'
 
+import * as wordActions from '../../reducers/word'
 import Word from './Word'
 
 const { array, bool, func, object, string } = PropTypes
