@@ -1,14 +1,24 @@
+import every from 'lodash/every'
+import find from 'lodash/find'
+import pick from 'lodash/pick'
+import reduce from 'lodash/reduce'
 import shuffle from 'lodash/shuffle'
-// import includes from 'lodash/includes'
 
 const INIT = 'init/INIT'
+const DELETE = 'delete/DELETE'
 const MARK = 'mark/MARK'
 const SUBMIT = 'submit/SUBMIT'
 
+
 const initialState = {
-  input: '',
-  inputArray: [],
-  shuffled: [],
+  now: {
+    completed: undefined,
+    available: [],
+    placed: [],
+    cards: {},
+  },
+  history: [
+  ],
 }
 
 const initialize = originalWord => ({
@@ -18,11 +28,16 @@ const initialize = originalWord => ({
   },
 })
 
-const wordSubmit = input => ({
+const letterSubmit = letter => ({
   type: SUBMIT,
   payload: {
-    input,
+    letter,
   },
+})
+
+const deleteIt = () => ({
+  type: DELETE,
+  payload: {},
 })
 
 const markIt = () => ({
@@ -34,36 +49,90 @@ const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case INIT: {
       const { originalWord } = payload
-      const shuffled = shuffle(originalWord)
+      const shuffled = shuffle(originalWord.split(''))
+      const createCard = (a, letter, index) => {
+        return {
+          ...a,
+          [index]:
+          {
+            id: index,
+            letter,
+            state: undefined,
+          },
+        }
+      }
+      const cardsObject = shuffled.reduce(createCard, {})
       return {
-        ...state,
+        ...initialState,
+        now: {
+          ...state.now,
+          available: shuffled.map((id, index) => index),
+          cards: cardsObject,
+        },
         originalWord,
-        shuffled,
       }
     }
     case SUBMIT: {
-      const input = payload.input.toLowerCase()
-      const { originalWord } = state
-      const inputArray = input.split('').map(letter => ({
-        letter,
-      }))
-      return {
-        ...state,
-        input,
-        inputArray,
+      const { letter } = payload
+      const { available, cards, placed } = state.now
+      const availableCards = pick(cards, available)
+      const card = find(availableCards, c => c.letter === letter)
+      if (card) {
+        const now = {
+          ...state.now,
+          placed: placed.concat(card.id),
+          available: available.filter(x => x !== card.id),
+        }
+        return {
+          ...state,
+          now,
+          history: state.history.concat(state.now),
+        }
       }
+      return state
+    }
+    case DELETE: {
+      if (state.history.length) {
+        const previousState = state.history.pop()
+        return {
+          ...state,
+          now: previousState,
+        }
+      }
+
+      return state
     }
     case MARK: {
       const { originalWord } = state
-      const { inputArray } = state
-      const marked = inputArray.map(({ letter }, index) => ({
-        letter,
-        check: letter === originalWord[index],
-      }))
-      return {
-        ...state,
-        inputArray: marked,
+      const { placed, cards, available } = state.now
+      const placedCards = pick(cards, placed)
+      if (placedCards) {
+        const checkCardState = (a, id, i) => {
+          const card = cards[id]
+          return {
+            ...a,
+            [id]: {
+              ...card,
+              state: card.letter === originalWord[i],
+            },
+          }
+        }
+        const checkedCards = reduce(placed, checkCardState, {})
+        const completed = available.length === 0 && placed.length && every(placedCards, ['state', true])
+        return {
+          ...state,
+          now: {
+            ...state.now,
+            cards: {
+              ...cards,
+              ...checkedCards,
+            },
+            completed,
+          },
+
+        }
       }
+      return state
     }
     default: {
       return state
@@ -74,8 +143,9 @@ const reducer = (state = initialState, { type, payload }) => {
 export {
   initialize,
   initialState,
+  letterSubmit,
+  deleteIt,
   markIt,
-  wordSubmit,
 }
 
 export default reducer

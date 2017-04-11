@@ -5,39 +5,61 @@ import * as wordActions from '../../reducers/word'
 
 import Word from './Word'
 
-const { array, func, object, string } = PropTypes
+const { array, bool, func, object, string } = PropTypes
 const propTypes = {
+  available: array.isRequired,
+  cards: object.isRequired,
+  completed: bool,
+  deleteIt: func.isRequired,
   initialize: func.isRequired,
-  input: string.isRequired,
-  inputArray: array.isRequired,
+  letterSubmit: func.isRequired,
   markIt: func.isRequired,
   originalWord: string.isRequired,
-  shuffled: array.isRequired,
-  wordSubmit: func.isRequired,
+  placed: array.isRequired,
 }
+
+const defaultProps = {
+  completed: undefined,
+}
+
 class WordContainer extends React.Component {
+  constructor() {
+    super()
+    this.bound_handleKeyDown = this.handleKeyDown.bind(this)
+  }
+
   componentDidMount() {
     this.props.initialize(this.props.originalWord)
+    document.addEventListener('keydown', this.bound_handleKeyDown)
   }
+
+  handleKeyDown({ key }) {
+    if (key === 'Enter') {
+      this.props.markIt(key)
+    } else if (key === 'Backspace') {
+      this.props.deleteIt(key)
+    } else {
+      this.props.letterSubmit(key)
+    }
+  }
+
   render() {
+    const { cards, placed, available, completed } = this.props
+
     return (
       <Word
-        input={this.props.input}
-        inputArray={this.props.inputArray}
-        markIt={this.props.markIt}
-        originalWord={this.props.originalWord}
-        shuffled={this.props.shuffled}
-        submit={this.props.wordSubmit}
+        cards={cards}
+        available={available}
+        placed={placed}
+        completed={completed}
       />
     )
   }
 }
-// const WordContainer = ({ input, wordSubmit }) => (
-//   <Word input={input} submit={wordSubmit} />
-// )
 
 WordContainer.propTypes = propTypes
+WordContainer.defaultProps = defaultProps
 
-const mapState = state => state.word
+const mapState = state => state.word.now
 const bindActions = dispatch => bindActionCreators(wordActions, dispatch)
 export default connect(mapState, bindActions)(WordContainer)

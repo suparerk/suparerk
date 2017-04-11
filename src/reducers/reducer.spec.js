@@ -39,10 +39,10 @@ describe('reducers/word', () => {
       const actual = reducer(initial, action)
       const expected = {
         inputArray: [
-          {"letter": "t"},
-          {"letter": "e"},
-          {"letter": "s"},
-          {"letter": "t"}]
+          { letter: 't' },
+          { letter: 'e' },
+          { letter: 's' },
+          { letter: 't' }]
       }
       expect(actual.inputArray).toEqual(expected.inputArray)
     })
@@ -57,7 +57,7 @@ describe('reducers/word', () => {
       const actual = reducer(submit, action)
       const expected = {
         inputArray: [
-          {"letter": "t", check: false},]
+          { letter: 't', check: false }]
       }
       expect(actual.inputArray).toEqual(expected.inputArray)
     })
@@ -68,10 +68,11 @@ describe('reducers/word', () => {
       const actual = reducer(submit, action)
       const expected = {
         inputArray: [
-          {"letter": "f", check: true},]
+          { letter: 'f', check: true }]
       }
       expect(actual.inputArray).toEqual(expected.inputArray)
     })
   })
 
-})
+}
+)
