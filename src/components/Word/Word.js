@@ -3,7 +3,6 @@ import Card from '../Card'
 import Slot from '../Slot'
 import map from 'lodash/map'
 
-
 const { array, bool, object } = PropTypes
 
 const propTypes = {
@@ -32,21 +31,9 @@ class Word extends Component {
           }
         </div>
         <hr />
-          {/* <div className="flex">
-            {placed.map(id =>
-              <Slot>
-                <Card
-                  key={id}
-                  {...cards[id]}
-                />
-              </Slot>
-            )}
-          </div>
-        <hr /> */}
         <div className="flex">
-          {map(cards, (id,index) =>
-            <Slot
-            >
+          {map(cards, (id, index) =>
+            <Slot>
               <Card
                 {...cards[placed[index]]}
               />

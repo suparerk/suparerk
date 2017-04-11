@@ -3,6 +3,14 @@ import { DragSource } from 'react-dnd'
 import { CARD } from '../ItemTypes'
 
 
+const { bool, func, string } = PropTypes
+
+const propTypes = {
+  connectDragSource: func,
+  letter: string,
+  state: bool,
+}
+
 const cardSource = {
   canDrag(props) {
     // You can disallow drag based on props
@@ -35,5 +43,7 @@ class Card extends Component {
     )
   }
 }
+
+Card.propTypes = propTypes
 
 export default DragSource(CARD, cardSource, collect)(Card)
