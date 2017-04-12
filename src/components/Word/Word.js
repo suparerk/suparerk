@@ -18,7 +18,7 @@ const defaultProps = {
 
 class Word extends Component {
   render() {
-    const { available, cards, completed, placed } = this.props
+    const { available, cards, completed, move, placed } = this.props
     return (
       <div className="App w3-content w3-padding-128">
         {JSON.stringify(completed)}
@@ -33,7 +33,12 @@ class Word extends Component {
         <hr />
         <div className="flex">
           {map(cards, (id, index) =>
-            <Slot>
+            <Slot
+              key={index}
+              id={index}
+              onMove={({ sourceId, targetId }) =>
+              move(sourceId, targetId)}
+            >
               <Card
                 {...cards[placed[index]]}
               />

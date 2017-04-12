@@ -8,6 +8,7 @@ const INIT = 'init/INIT'
 const DELETE = 'delete/DELETE'
 const MARK = 'mark/MARK'
 const SUBMIT = 'submit/SUBMIT'
+const DROP = 'drop/DROP'
 
 
 const initialState = {
@@ -43,6 +44,14 @@ const deleteIt = () => ({
 const markIt = () => ({
   type: MARK,
   payload: {},
+})
+
+const dropIt = (sourceId, targetId) => ({
+  type: DROP,
+  payload: {
+    sourceId,
+    targetId,
+  },
 })
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -134,6 +143,11 @@ const reducer = (state = initialState, { type, payload }) => {
       }
       return state
     }
+    case DROP: {
+      const { sourceId, targetId } = payload
+      console.log('sourceId', sourceId)
+      console.log('targetId', targetId)
+    }
     default: {
       return state
     }
@@ -145,6 +159,7 @@ export {
   initialState,
   letterSubmit,
   deleteIt,
+  dropIt,
   markIt,
 }
 
