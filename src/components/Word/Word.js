@@ -1,4 +1,7 @@
-import React, { PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react'
+import Card from '../Card'
+import Slot from '../Slot'
+import map from 'lodash/map'
 
 const { array, bool, object } = PropTypes
 
@@ -13,43 +16,39 @@ const defaultProps = {
   completed: undefined,
 }
 
-const colors = {
-  true: 'green',
-  false: 'red',
+class Word extends Component {
+  render() {
+    const { available, cards, completed, move, placed, slots } = this.props
+    return (
+      <div className="App w3-content w3-padding-128">
+        {/* {JSON.stringify(completed)} */}
+        <div className="flex">
+          {available.map(id =>
+            <Card
+              key={id}
+              {...cards[id]}
+            />)
+          }
+        </div>
+        <hr />
+        <div className="flex">
+          {map(slots, (slot, key) =>
+            <Slot
+              key={key}
+              {...slot}
+              onMove={({ sourceId, targetId }) =>
+              move(sourceId, targetId)}
+            >
+              <Card
+                {...cards[slot.cardId]}
+              />
+            </Slot>
+          )}
+        </div>
+      </div>
+    )
+  }
 }
-
-const Letter = ({ letter, state }) => (
-  <span className={`card ${colors[state]}`}>{letter}</span>
-)
-
-const Word = ({
-  available,
-  cards,
-  completed,
-  placed,
-}) => (
-  <div className="App w3-content w3-padding-128">
-    {JSON.stringify(completed)}
-    <div className="flex">
-      {available.map(id =>
-        <Letter
-          key={id}
-          {...cards[id]}
-        />)
-      }
-    </div>
-    <hr />
-    <div className="flex">
-      {placed.map(id =>
-        <Letter
-          key={id}
-          {...cards[id]}
-        />)
-      }
-    </div>
-
-  </div>
-)
 
 Word.propTypes = propTypes
 Word.defaultProps = defaultProps
