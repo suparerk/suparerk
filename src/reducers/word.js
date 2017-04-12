@@ -100,10 +100,18 @@ const reducer = (state = initialState, { type, payload }) => {
       const { available, cards, placed, slots } = state.now
       const availableCards = pick(cards, available)
       const card = find(availableCards, c => c.letter === letter)
+      const firstEmptySlot = find(slots, s => s.cardId === null)
       if (card) {
         const now = {
           ...state.now,
-          placed: placed.concat(card.id),
+          // placed: placed.concat(card.id),
+          slots: {
+            ...slots,
+            [firstEmptySlot.id]: {
+              ...slots[firstEmptySlot.id],
+              cardId: card.id,
+            },
+          },
           available: available.filter(x => x !== card.id),
         }
         return {
@@ -126,6 +134,7 @@ const reducer = (state = initialState, { type, payload }) => {
       return state
     }
     case MARK: {
+      console.log('enter')
       const { originalWord } = state
       const { placed, cards, available } = state.now
       const placedCards = pick(cards, placed)
@@ -140,6 +149,8 @@ const reducer = (state = initialState, { type, payload }) => {
             },
           }
         }
+        console.log('placedCards', placedCards)
+        // console.log('checkCardState', checkCardState)
         const checkedCards = reduce(placed, checkCardState, {})
         const completed = available.length === 0 && placed.length && every(placedCards, ['state', true])
         return {
@@ -177,28 +188,30 @@ const reducer = (state = initialState, { type, payload }) => {
       const newAvailable = targetSlot.cardId !== null ?
       available.filter(x => x !== sourceCardId).concat(targetSlot.cardId) :
       available.filter(x => x !== sourceCardId)
+      const now = {
+        ...state.now,
+        slots: {
+          ...slots,
+          [targetSlotId]: {
+            ...slots[targetSlotId],
+            cardId: sourceCardId,
+          },
+          ...newSlot,
+        },
+        cards: {
+          ...cards,
+          [sourceCardId]: {
+            ...cards[sourceCardId],
+            slotId: targetSlotId,
+          },
+          ...newCard,
+        },
+        available: newAvailable,
+      }
       return {
         ...state,
-        now: {
-          ...state.now,
-          slots: {
-            ...slots,
-            [targetSlotId]: {
-              ...slots[targetSlotId],
-              cardId: sourceCardId,
-            },
-            ...newSlot,
-          },
-          cards: {
-            ...cards,
-            [sourceCardId]: {
-              ...cards[sourceCardId],
-              slotId: targetSlotId,
-            },
-            ...newCard,
-          },
-          available: newAvailable,
-        },
+        now,
+        history: state.history.concat(state.now),
       }
     }
     default: {
