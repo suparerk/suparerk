@@ -154,7 +154,6 @@ const reducer = (state = initialState, { type, payload }) => {
         }
       }
       const checkedCards = reduce(slots, checkCardState, {})
-      console.log(checkedCards)
       const completed = available.length === 0
       return {
         ...state,
