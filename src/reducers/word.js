@@ -17,6 +17,7 @@ const initialState = {
     available: [],
     placed: [],
     cards: {},
+    slots: {},
   },
   history: [
   ],
@@ -67,16 +68,29 @@ const reducer = (state = initialState, { type, payload }) => {
             id: index,
             letter,
             state: undefined,
+            slotId: null,
+          },
+        }
+      }
+      const createSlot = (a, letter, index) => {
+        return {
+          ...a,
+          [index]:
+          {
+            id: index,
+            cardId: null,
           },
         }
       }
       const cardsObject = shuffled.reduce(createCard, {})
+      const slotObject = shuffled.reduce(createSlot, {})
       return {
         ...initialState,
         now: {
           ...state.now,
           available: shuffled.map((id, index) => index),
           cards: cardsObject,
+          slots: slotObject,
         },
         originalWord,
       }
