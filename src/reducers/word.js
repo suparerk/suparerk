@@ -1,4 +1,3 @@
-import every from 'lodash/every'
 import find from 'lodash/find'
 import pick from 'lodash/pick'
 import reduce from 'lodash/reduce'
@@ -15,7 +14,6 @@ const initialState = {
   now: {
     completed: undefined,
     available: [],
-    placed: [],
     cards: {},
     slots: {},
   },
@@ -97,7 +95,7 @@ const reducer = (state = initialState, { type, payload }) => {
     }
     case SUBMIT: {
       const { letter } = payload
-      const { available, cards, placed, slots } = state.now
+      const { available, cards, slots } = state.now
       const availableCards = pick(cards, available)
       const card = find(availableCards, c => c.letter === letter)
       const firstEmptySlot = find(slots, s => s.cardId === null)
@@ -141,8 +139,8 @@ const reducer = (state = initialState, { type, payload }) => {
     }
     case MARK: {
       const { originalWord } = state
-      const { placed, cards, available, slots } = state.now
-      // const placedCards = pick(cards, placed)
+      const { cards, available, slots } = state.now
+      // const Cards = pick(cards, )
       const checkCardState = (a, slot, i) => {
         const card = slot.cardId !== null ? cards[slot.cardId] : {}
         return {

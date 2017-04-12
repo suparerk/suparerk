@@ -9,7 +9,6 @@ const propTypes = {
   available: array.isRequired,
   cards: object.isRequired,
   completed: bool,
-  placed: array.isRequired,
 }
 
 const defaultProps = {
@@ -18,7 +17,7 @@ const defaultProps = {
 
 class Word extends Component {
   render() {
-    const { available, cards, completed, move, placed, slots } = this.props
+    const { available, cards, completed, move, slots } = this.props
     return (
       <div className="App w3-content w3-padding-128">
         {/* {JSON.stringify(completed)} */}
