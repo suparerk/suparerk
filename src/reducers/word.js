@@ -104,7 +104,6 @@ const reducer = (state = initialState, { type, payload }) => {
       if (card) {
         const now = {
           ...state.now,
-          // placed: placed.concat(card.id),
           slots: {
             ...slots,
             [firstEmptySlot.id]: {
@@ -134,25 +133,23 @@ const reducer = (state = initialState, { type, payload }) => {
       return state
     }
     case MARK: {
-      console.log('enter')
       const { originalWord } = state
-      const { placed, cards, available } = state.now
+      const { placed, cards, available, slots } = state.now
       const placedCards = pick(cards, placed)
+      console.log(placedCards)
       if (placedCards) {
-        const checkCardState = (a, id, i) => {
-          const card = cards[id]
+        const checkCardState = (a, slot, i) => {
+          const card = slot.cardId !== null ? cards[slot.cardId] : {}
           return {
             ...a,
-            [id]: {
+            [slot.cardId]: {
               ...card,
               state: card.letter === originalWord[i],
             },
           }
         }
-        console.log('placedCards', placedCards)
-        // console.log('checkCardState', checkCardState)
-        const checkedCards = reduce(placed, checkCardState, {})
-        const completed = available.length === 0 && placed.length && every(placedCards, ['state', true])
+        const checkedCards = reduce(slots, checkCardState, {})
+        const completed = available.length === 0 && every(placedCards, ['state', true])
         return {
           ...state,
           now: {
