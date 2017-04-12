@@ -40,7 +40,7 @@ class Word extends Component {
               move(sourceId, targetId)}
             >
               <Card
-                {...cards[placed[key]]}
+                {...cards[slot.cardId]}
               />
             </Slot>
           )}

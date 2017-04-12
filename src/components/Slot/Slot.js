@@ -12,7 +12,7 @@ const canDropCard = () => true
 
 const slotTarget = {
   canDrop(props, monitor) {
-    const item = monitor.getItem()
+    // const item = monitor.getItem()
     return canDropCard()
   },
   drop(props, monitor) {
