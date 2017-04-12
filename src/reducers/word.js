@@ -162,18 +162,21 @@ const reducer = (state = initialState, { type, payload }) => {
       const { available, cards, slots } = state.now
       const sourceCard = sourceCardId !== null ? cards[sourceCardId] : null
       const targetSlot = targetSlotId !== null ? slots[targetSlotId] : null
-      const newSlot = sourceCard.slotId && {
+      const newSlot = sourceCard.slotId !== null && {
         [sourceCard.slotId]: {
           ...slots[sourceCard.slotId],
           cardId: targetSlot.cardId,
         },
       }
-      const newCard = targetSlot.cardId && {
+      const newCard = targetSlot.cardId !== null && {
         [targetSlot.cardId]: {
           ...cards[targetSlot.cardId],
           slotId: sourceCard.slotId,
         },
       }
+      const newAvailable = targetSlot.cardId !== null ?
+      available.filter(x => x !== sourceCardId).concat(targetSlot.cardId) :
+      available.filter(x => x !== sourceCardId)
       return {
         ...state,
         now: {
@@ -194,7 +197,7 @@ const reducer = (state = initialState, { type, payload }) => {
             },
             ...newCard,
           },
-          available: available.filter(x => x !== sourceCardId),
+          available: newAvailable,
         },
       }
     }
