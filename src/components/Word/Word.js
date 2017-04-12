@@ -21,7 +21,7 @@ class Word extends Component {
     const { available, cards, completed, move, placed, slots } = this.props
     return (
       <div className="App w3-content w3-padding-128">
-        {JSON.stringify(completed)}
+        {/* {JSON.stringify(completed)} */}
         <div className="flex">
           {available.map(id =>
             <Card
