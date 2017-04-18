@@ -15,7 +15,7 @@ const propTypes = {
   deleteIt: func.isRequired,
   dropIt: func.isRequired,
   initialize: func.isRequired,
-  lastCorrectedPosition: number.isRequired,
+  position: number.isRequired,
   letterSubmit: func.isRequired,
   markIt: func.isRequired,
   originalWord: string.isRequired,
@@ -48,7 +48,7 @@ class WordContainer extends React.Component {
   }
 
   render() {
-    const { cards, available, completed, dropIt, lastCorrectedPosition, slots } = this.props
+    const { cards, available, completed, dropIt, position, slots } = this.props
 
     return (
       <Word
@@ -56,7 +56,7 @@ class WordContainer extends React.Component {
         available={available}
         completed={completed}
         move={dropIt}
-        lastCorrectedPosition={lastCorrectedPosition}
+        position={position}
         slots={slots}
       />
     )

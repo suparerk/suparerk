@@ -15,7 +15,7 @@ const initialState = {
     available: [],
     cards: {},
     completed: undefined,
-    lastCorrectedPosition: 0,
+    position: 0,
     slots: {},
   },
   history: [
@@ -54,30 +54,80 @@ const dropIt = (sourceId, targetId) => ({
   },
 })
 
+const drop = ({ targetId: targetSlotId, sourceId: sourceCardId, state }) => {
+  const { available, cards, slots } = state.now
+  const sourceCard = { ...cards[sourceCardId] }
+  const targetSlot = { ...slots[targetSlotId] }
+
+  const newSlot = sourceCard.slotId && {
+    [sourceCard.slotId]: {
+      ...slots[sourceCard.slotId],
+      cardId: targetSlot.cardId,
+    },
+  }
+  const newCard = targetSlot.cardId && {
+    [targetSlot.cardId]: {
+      ...cards[targetSlot.cardId],
+      slotId: sourceCard.slotId,
+    },
+  }
+
+  const newAvailable = targetSlot.cardId && available.length !== 0 ?
+  available.filter(x => x !== sourceCardId).concat(targetSlot.cardId) :
+  available.filter(x => x !== sourceCardId)
+  const now = {
+    ...state.now,
+    slots: {
+      ...slots,
+      [targetSlotId]: {
+        ...slots[targetSlotId],
+        cardId: sourceCardId,
+      },
+      ...newSlot,
+    },
+    cards: {
+      ...cards,
+      [sourceCardId]: {
+        ...cards[sourceCardId],
+        slotId: targetSlotId,
+      },
+      ...newCard,
+    },
+    available: newAvailable,
+  }
+  return {
+    ...state,
+    now,
+    history: state.history.concat(state.now),
+  }
+}
+
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case INIT: {
       const { originalWord } = payload
       const shuffled = shuffle(originalWord.split(''))
       const createCard = (a, letter, index) => {
+        const theIndex = `a${index}`
         return {
           ...a,
-          [index]:
+          [theIndex]:
           {
-            id: index,
+            id: theIndex,
             letter,
             state: undefined,
-            slotId: index,
+            slotId: theIndex,
           },
         }
       }
       const createSlot = (a, letter, index) => {
+        const theIndex = `a${index}`
         return {
           ...a,
-          [index]:
+          [theIndex]:
           {
-            id: index,
-            cardId: index,
+            id: theIndex,
+            cardId: theIndex,
           },
         }
       }
@@ -87,63 +137,36 @@ const reducer = (state = initialState, { type, payload }) => {
         ...initialState,
         now: {
           ...state.now,
-          available: shuffled.map((id, index) => index),
+          available: Object.keys(cardsObject),
           cards: cardsObject,
           slots: slotObject,
         },
         originalWord,
       }
     }
+
     case SUBMIT: {
       const { letter } = payload
-      const { available, cards, lastCorrectedPosition, slots } = state.now
-      const { originalWord } = state
+      const { available, cards, position: previousPosition, slots } = state.now
+      // const { originalWord } = state
       const availableCards = pick(cards, available)
       const card = find(availableCards, c => c.letter === letter)
-      const getCurrentPosition = () => {
-        const id = card.letter === originalWord[lastCorrectedPosition] ?
-        lastCorrectedPosition + 1 : lastCorrectedPosition
-        return {
-          id
-        }
-      }
-      const currentPosition = getCurrentPosition()
-      if (card && card.slotId !== lastCorrectedPosition) {
-        const now = {
+      if (!card) { return state }
+
+      const position = previousPosition + 1
+
+      const sourceId = card.id
+      const targetId = slots[Object.keys(slots)[previousPosition]].id
+      const newState = {
+        ...state,
+        now: {
           ...state.now,
-          slots: {
-            ...slots,
-            [lastCorrectedPosition]: {
-              ...slots[lastCorrectedPosition],
-              cardId: card.id,
-            },
-            [card.slotId]: {
-              ...slots[card.slotId],
-              cardId: lastCorrectedPosition,
-            },
-          },
-          cards: {
-            ...cards,
-            [card.id]: {
-              ...card,
-              slotId: cards[lastCorrectedPosition].slotId,
-            },
-            [lastCorrectedPosition]: {
-              ...cards[lastCorrectedPosition],
-              slotId: card.slotId,
-            },
-          },
-          available: available.filter(x => x !== card.id),
-          lastCorrectedPosition: currentPosition.id,
-        }
-        return {
-          ...state,
-          now,
-          history: state.history.concat(state.now),
-        }
+          position,
+        },
       }
-      return state
+      return drop({ targetId, sourceId, state: newState })
     }
+
     case DELETE: {
       if (state.history.length) {
         const previousState = state.history.pop()
@@ -183,51 +206,8 @@ const reducer = (state = initialState, { type, payload }) => {
       }
     }
     case DROP: {
-      const sourceCardId = payload.sourceId
-      const targetSlotId = payload.targetId
-      const { available, cards, slots } = state.now
-      const sourceCard = sourceCardId !== null ? cards[sourceCardId] : null
-      const targetSlot = targetSlotId !== null ? slots[targetSlotId] : null
-      const newSlot = sourceCard.slotId !== null && {
-        [sourceCard.slotId]: {
-          ...slots[sourceCard.slotId],
-          cardId: targetSlot.cardId,
-        },
-      }
-      const newCard = targetSlot.cardId !== null && {
-        [targetSlot.cardId]: {
-          ...cards[targetSlot.cardId],
-          slotId: sourceCard.slotId,
-        },
-      }
-      const newAvailable = targetSlot.cardId !== null && available.length !== 0 ?
-      available.filter(x => x !== sourceCardId).concat(targetSlot.cardId) :
-      available.filter(x => x !== sourceCardId)
-      const now = {
-        ...state.now,
-        slots: {
-          ...slots,
-          [targetSlotId]: {
-            ...slots[targetSlotId],
-            cardId: sourceCardId,
-          },
-          ...newSlot,
-        },
-        cards: {
-          ...cards,
-          [sourceCardId]: {
-            ...cards[sourceCardId],
-            slotId: targetSlotId,
-          },
-          ...newCard,
-        },
-        available: newAvailable,
-      }
-      return {
-        ...state,
-        now,
-        history: state.history.concat(state.now),
-      }
+      const { sourceId, targetId } = payload
+      return drop({ targetId, sourceId, state })
     }
     default: {
       return state

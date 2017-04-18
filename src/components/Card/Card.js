@@ -37,9 +37,11 @@ class Card extends Component {
       true: 'green',
       false: 'red',
     }
-    const { letter, state, connectDragSource } = this.props
+
+    const { letter, state, connectDragSource, active } = this.props
+    
     return connectDragSource(
-      <span className={`card ${colors[state]}`}>{letter}</span>
+      <span className={`card ${colors[state]} ${active && colors[active]}`}>{letter}</span>
     )
   }
 }
