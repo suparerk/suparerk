@@ -148,13 +148,10 @@ const reducer = (state = initialState, { type, payload }) => {
     case SUBMIT: {
       const { letter } = payload
       const { available, cards, position: previousPosition, slots } = state.now
-      // const { originalWord } = state
       const availableCards = pick(cards, available)
       const card = find(availableCards, c => c.letter === letter)
       if (!card) { return state }
-
       const position = previousPosition + 1
-
       const sourceId = card.id
       const targetId = slots[Object.keys(slots)[previousPosition]].id
       const newState = {
@@ -169,10 +166,14 @@ const reducer = (state = initialState, { type, payload }) => {
 
     case DELETE: {
       if (state.history.length) {
+        console.log(state)
         const previousState = state.history.pop()
         return {
           ...state,
-          now: previousState,
+          now: {
+            ...previousState,
+            position: previousState.position - 1,
+          },
         }
       }
 
@@ -182,7 +183,7 @@ const reducer = (state = initialState, { type, payload }) => {
       const { originalWord } = state
       const { cards, available, slots } = state.now
       const checkCardState = (a, slot, i) => {
-        const card = slot.cardId !== null ? cards[slot.cardId] : {}
+        const card = slot.cardId ? cards[slot.cardId] : {}
         return {
           ...a,
           [slot.cardId]: {
