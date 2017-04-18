@@ -54,7 +54,7 @@ const dropIt = (sourceId, targetId) => ({
   },
 })
 
-const drop = ({ targetId: targetSlotId, sourceId: sourceCardId, state }) => {
+const handleDrop = ({ targetId: targetSlotId, sourceId: sourceCardId, state }) => {
   const { available, cards, slots } = state.now
   const sourceCard = { ...cards[sourceCardId] }
   const targetSlot = { ...slots[targetSlotId] }
@@ -102,6 +102,19 @@ const drop = ({ targetId: targetSlotId, sourceId: sourceCardId, state }) => {
   }
 }
 
+const handleType = ({ targetId, sourceId, state }) => {
+  const newState = handleDrop({ targetId, sourceId, state })
+  const { now } = newState
+  return {
+    ...newState,
+    now: {
+      ...now,
+      position: now.position + 1,
+    },
+  }
+}
+
+
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case INIT: {
@@ -147,43 +160,32 @@ const reducer = (state = initialState, { type, payload }) => {
 
     case SUBMIT: {
       const { letter } = payload
-      const { available, cards, position: previousPosition, slots } = state.now
+      const { available, cards, position, slots } = state.now
       const availableCards = pick(cards, available)
       const card = find(availableCards, c => c.letter === letter)
       if (!card) { return state }
-      const position = previousPosition + 1
       const sourceId = card.id
-      const targetId = slots[Object.keys(slots)[previousPosition]].id
-      const newState = {
-        ...state,
-        now: {
-          ...state.now,
-          position,
-        },
-      }
-      return drop({ targetId, sourceId, state: newState })
+      const targetId = slots[Object.keys(slots)[position]].id
+      return handleType({ targetId, sourceId, state })
     }
 
     case DELETE: {
       if (state.history.length) {
-        console.log(state)
-        const previousState = state.history.pop()
+        const now = state.history.pop()
         return {
           ...state,
-          now: {
-            ...previousState,
-            position: previousState.position - 1,
-          },
+          now,
         }
       }
-
       return state
     }
+
     case MARK: {
       const { originalWord } = state
       const { cards, available, slots } = state.now
-      const checkCardState = (a, slot, i) => {
-        const card = slot.cardId ? cards[slot.cardId] : {}
+      const checkCardState = (a, slotId, i) => {
+        const slot = slots[slotId]
+        const card = cards[slot.cardId]
         return {
           ...a,
           [slot.cardId]: {
@@ -192,7 +194,8 @@ const reducer = (state = initialState, { type, payload }) => {
           },
         }
       }
-      const checkedCards = reduce(slots, checkCardState, {})
+      const checkedCards = Object.keys(slots).reduce(checkCardState, {})
+
       const completed = available.length === 0
       return {
         ...state,
@@ -208,7 +211,7 @@ const reducer = (state = initialState, { type, payload }) => {
     }
     case DROP: {
       const { sourceId, targetId } = payload
-      return drop({ targetId, sourceId, state })
+      return handleDrop({ targetId, sourceId, state })
     }
     default: {
       return state
