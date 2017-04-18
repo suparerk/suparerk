@@ -9,7 +9,6 @@ import Word from './Word'
 
 const { array, bool, func, number, object, string } = PropTypes
 const propTypes = {
-  available: array.isRequired,
   cards: object.isRequired,
   completed: bool,
   deleteIt: func.isRequired,
@@ -48,12 +47,11 @@ class WordContainer extends React.Component {
   }
 
   render() {
-    const { cards, available, completed, dropIt, position, slots } = this.props
+    const { cards, completed, dropIt, position, slots } = this.props
 
     return (
       <Word
         cards={cards}
-        available={available}
         completed={completed}
         move={dropIt}
         position={position}

@@ -1,5 +1,6 @@
 import find from 'lodash/find'
 import pick from 'lodash/pick'
+import map from 'lodash/map'
 import reduce from 'lodash/reduce'
 import shuffle from 'lodash/shuffle'
 
@@ -12,7 +13,6 @@ const DROP = 'drop/DROP'
 
 const initialState = {
   now: {
-    available: [],
     cards: {},
     completed: undefined,
     position: 0,
@@ -55,7 +55,7 @@ const dropIt = (sourceId, targetId) => ({
 })
 
 const handleDrop = ({ targetId: targetSlotId, sourceId: sourceCardId, state }) => {
-  const { available, cards, slots } = state.now
+  const { cards, slots } = state.now
   const sourceCard = { ...cards[sourceCardId] }
   const targetSlot = { ...slots[targetSlotId] }
 
@@ -71,10 +71,6 @@ const handleDrop = ({ targetId: targetSlotId, sourceId: sourceCardId, state }) =
       slotId: sourceCard.slotId,
     },
   }
-
-  const newAvailable = targetSlot.cardId && available.length !== 0 ?
-  available.filter(x => x !== sourceCardId).concat(targetSlot.cardId) :
-  available.filter(x => x !== sourceCardId)
   const now = {
     ...state.now,
     slots: {
@@ -93,7 +89,6 @@ const handleDrop = ({ targetId: targetSlotId, sourceId: sourceCardId, state }) =
       },
       ...newCard,
     },
-    available: newAvailable,
   }
   return {
     ...state,
@@ -113,7 +108,6 @@ const handleType = ({ targetId, sourceId, state }) => {
     },
   }
 }
-
 
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
@@ -150,7 +144,6 @@ const reducer = (state = initialState, { type, payload }) => {
         ...initialState,
         now: {
           ...state.now,
-          available: Object.keys(cardsObject),
           cards: cardsObject,
           slots: slotObject,
         },
@@ -160,9 +153,9 @@ const reducer = (state = initialState, { type, payload }) => {
 
     case SUBMIT: {
       const { letter } = payload
-      const { available, cards, position, slots } = state.now
-      const availableCards = pick(cards, available)
-      const card = find(availableCards, c => c.letter === letter)
+      const { cards, position, slots } = state.now
+      const available = pick(cards, map(slots, 'cardId').slice(position))
+      const card = find(available, c => c.letter === letter)
       if (!card) { return state }
       const sourceId = card.id
       const targetId = slots[Object.keys(slots)[position]].id
@@ -182,7 +175,7 @@ const reducer = (state = initialState, { type, payload }) => {
 
     case MARK: {
       const { originalWord } = state
-      const { cards, available, slots } = state.now
+      const { cards, slots } = state.now
       const checkCardState = (a, slotId, i) => {
         const slot = slots[slotId]
         const card = cards[slot.cardId]
@@ -196,7 +189,6 @@ const reducer = (state = initialState, { type, payload }) => {
       }
       const checkedCards = Object.keys(slots).reduce(checkCardState, {})
 
-      const completed = available.length === 0
       return {
         ...state,
         now: {
@@ -205,7 +197,6 @@ const reducer = (state = initialState, { type, payload }) => {
             ...cards,
             ...checkedCards,
           },
-          completed,
         },
       }
     }
