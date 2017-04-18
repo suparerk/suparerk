@@ -17,8 +17,6 @@ const slotTarget = {
   },
   drop(props, monitor) {
     const id = monitor.getItem().id
-    console.log('sourceId', id)
-    console.log('targetId', props.id)
     props.onMove({ sourceId: id, targetId: props.id })
   },
 }

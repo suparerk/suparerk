@@ -12,9 +12,10 @@ const DROP = 'drop/DROP'
 
 const initialState = {
   now: {
-    completed: undefined,
     available: [],
     cards: {},
+    completed: undefined,
+    lastCorrectedPosition: 0,
     slots: {},
   },
   history: [
@@ -95,28 +96,45 @@ const reducer = (state = initialState, { type, payload }) => {
     }
     case SUBMIT: {
       const { letter } = payload
-      const { available, cards, slots } = state.now
+      const { available, cards, lastCorrectedPosition, slots } = state.now
+      const { originalWord } = state
       const availableCards = pick(cards, available)
       const card = find(availableCards, c => c.letter === letter)
-      const firstEmptySlot = find(slots, s => s.cardId === null)
-      if (card) {
+      const getCurrentPosition = () => {
+        const id = card.letter === originalWord[lastCorrectedPosition] ?
+        lastCorrectedPosition + 1 : lastCorrectedPosition
+        return {
+          id
+        }
+      }
+      const currentPosition = getCurrentPosition()
+      if (card && card.slotId !== lastCorrectedPosition) {
         const now = {
           ...state.now,
           slots: {
             ...slots,
-            [firstEmptySlot.id]: {
-              ...slots[firstEmptySlot.id],
+            [lastCorrectedPosition]: {
+              ...slots[lastCorrectedPosition],
               cardId: card.id,
+            },
+            [card.slotId]: {
+              ...slots[card.slotId],
+              cardId: lastCorrectedPosition,
             },
           },
           cards: {
             ...cards,
             [card.id]: {
               ...card,
-              slotId: firstEmptySlot.id,
+              slotId: cards[lastCorrectedPosition].slotId,
+            },
+            [lastCorrectedPosition]: {
+              ...cards[lastCorrectedPosition],
+              slotId: card.slotId,
             },
           },
           available: available.filter(x => x !== card.id),
+          lastCorrectedPosition: currentPosition.id,
         }
         return {
           ...state,
@@ -140,7 +158,6 @@ const reducer = (state = initialState, { type, payload }) => {
     case MARK: {
       const { originalWord } = state
       const { cards, available, slots } = state.now
-      // const Cards = pick(cards, )
       const checkCardState = (a, slot, i) => {
         const card = slot.cardId !== null ? cards[slot.cardId] : {}
         return {
@@ -168,13 +185,9 @@ const reducer = (state = initialState, { type, payload }) => {
     case DROP: {
       const sourceCardId = payload.sourceId
       const targetSlotId = payload.targetId
-      console.log('sourceCardId', sourceCardId)
-      console.log('targetId', targetSlotId)
       const { available, cards, slots } = state.now
       const sourceCard = sourceCardId !== null ? cards[sourceCardId] : null
       const targetSlot = targetSlotId !== null ? slots[targetSlotId] : null
-      console.log('sourceCard', sourceCard)
-      console.log('targetSlot', targetSlot)
       const newSlot = sourceCard.slotId !== null && {
         [sourceCard.slotId]: {
           ...slots[sourceCard.slotId],
@@ -187,7 +200,7 @@ const reducer = (state = initialState, { type, payload }) => {
           slotId: sourceCard.slotId,
         },
       }
-      const newAvailable = targetSlot.cardId !== null &&  available.length !== 0 ?
+      const newAvailable = targetSlot.cardId !== null && available.length !== 0 ?
       available.filter(x => x !== sourceCardId).concat(targetSlot.cardId) :
       available.filter(x => x !== sourceCardId)
       const now = {
