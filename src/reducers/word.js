@@ -168,13 +168,9 @@ const reducer = (state = initialState, { type, payload }) => {
     case DROP: {
       const sourceCardId = payload.sourceId
       const targetSlotId = payload.targetId
-      console.log('sourceCardId', sourceCardId)
-      console.log('targetId', targetSlotId)
       const { available, cards, slots } = state.now
       const sourceCard = sourceCardId !== null ? cards[sourceCardId] : null
       const targetSlot = targetSlotId !== null ? slots[targetSlotId] : null
-      console.log('sourceCard', sourceCard)
-      console.log('targetSlot', targetSlot)
       const newSlot = sourceCard.slotId !== null && {
         [sourceCard.slotId]: {
           ...slots[sourceCard.slotId],
