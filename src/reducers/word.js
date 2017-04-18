@@ -1,7 +1,6 @@
 import find from 'lodash/find'
 import pick from 'lodash/pick'
 import map from 'lodash/map'
-import reduce from 'lodash/reduce'
 import shuffle from 'lodash/shuffle'
 
 const INIT = 'init/INIT'
@@ -18,8 +17,7 @@ const initialState = {
     position: 0,
     slots: {},
   },
-  history: [
-  ],
+  history: [],
 }
 
 const initialize = originalWord => ({
@@ -109,35 +107,38 @@ const handleType = ({ targetId, sourceId, state }) => {
   }
 }
 
+const createCard = (a, letter, index) => {
+  const theIndex = `a${index}`
+  return {
+    ...a,
+    [theIndex]:
+    {
+      id: theIndex,
+      letter,
+      state: undefined,
+      slotId: theIndex,
+    },
+  }
+}
+
+const createSlot = (a, letter, index) => {
+  const theIndex = `a${index}`
+  return {
+    ...a,
+    [theIndex]:
+    {
+      id: theIndex,
+      cardId: theIndex,
+    },
+  }
+}
+
 const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case INIT: {
       const { originalWord } = payload
       const shuffled = shuffle(originalWord.split(''))
-      const createCard = (a, letter, index) => {
-        const theIndex = `a${index}`
-        return {
-          ...a,
-          [theIndex]:
-          {
-            id: theIndex,
-            letter,
-            state: undefined,
-            slotId: theIndex,
-          },
-        }
-      }
-      const createSlot = (a, letter, index) => {
-        const theIndex = `a${index}`
-        return {
-          ...a,
-          [theIndex]:
-          {
-            id: theIndex,
-            cardId: theIndex,
-          },
-        }
-      }
+
       const cardsObject = shuffled.reduce(createCard, {})
       const slotObject = shuffled.reduce(createSlot, {})
       return {
@@ -174,8 +175,8 @@ const reducer = (state = initialState, { type, payload }) => {
     }
 
     case MARK: {
-      const { originalWord } = state
-      const { cards, slots } = state.now
+      const { originalWord, now, now: { cards, slots } } = state
+
       const checkCardState = (a, slotId, i) => {
         const slot = slots[slotId]
         const card = cards[slot.cardId]
@@ -192,7 +193,7 @@ const reducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         now: {
-          ...state.now,
+          ...now,
           cards: {
             ...cards,
             ...checkedCards,
@@ -200,10 +201,12 @@ const reducer = (state = initialState, { type, payload }) => {
         },
       }
     }
+
     case DROP: {
       const { sourceId, targetId } = payload
       return handleDrop({ targetId, sourceId, state })
     }
+
     default: {
       return state
     }

@@ -7,7 +7,7 @@ import { DragDropContext } from 'react-dnd'
 import * as wordActions from '../../reducers/word'
 import Word from './Word'
 
-const { array, bool, func, number, object, string } = PropTypes
+const { bool, func, number, object, string } = PropTypes
 const propTypes = {
   cards: object.isRequired,
   completed: bool,
