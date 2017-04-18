@@ -21,14 +21,14 @@ class Word extends Component {
     return (
       <div className="App w3-content w3-padding-128">
         {/* {JSON.stringify(completed)} */}
-        <div className="flex">
+        {/* <div className="flex">
           {available.map(id =>
             <Card
               key={id}
               {...cards[id]}
             />)
           }
-        </div>
+        </div> */}
         <hr />
         <div className="flex">
           {map(slots, (slot, key) =>
