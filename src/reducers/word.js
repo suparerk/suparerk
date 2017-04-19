@@ -163,17 +163,32 @@ const reducer = (state = initialState, { type, payload }) => {
       return handleType({ targetId, sourceId, state })
     }
 
+    // case DELETE: {
+    //   if (state.history.length) {
+    //     const now = state.history.pop()
+    //     return {
+    //       ...state,
+    //       now,
+    //     }
+    //   }
+    //   return state
+    // }
     case DELETE: {
-      if (state.history.length) {
-        const now = state.history.pop()
-        return {
-          ...state,
-          now,
-        }
+      const { history: oldHistory } = state
+      console.log('oldHistory', oldHistory)
+      const now = oldHistory.slice(-1)[0]
+      console.log('now', now)
+      const history = oldHistory.slice(0, -1)
+      console.log('history', history)
+      return {
+        ...state,
+        now: {
+          ...state.now,
+          ...now,
+        },
+        history,
       }
-      return state
     }
-
     case MARK: {
       const { originalWord, now, now: { cards, slots } } = state
 
