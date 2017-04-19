@@ -51,11 +51,10 @@ const dropIt = (sourceId, targetId) => ({
     targetId,
   },
 })
-
-const handleDrop = ({ targetId: targetSlotId, sourceId: sourceCardId, state }) => {
+const handleDrop = ({ targetId, sourceId, state }) => {
   const { cards, slots } = state.now
-  const sourceCard = { ...cards[sourceCardId] }
-  const targetSlot = { ...slots[targetSlotId] }
+  const sourceCard = { ...cards[sourceId] }
+  const targetSlot = { ...slots[targetId] }
 
   const newSlot = sourceCard.slotId && {
     [sourceCard.slotId]: {
@@ -69,39 +68,41 @@ const handleDrop = ({ targetId: targetSlotId, sourceId: sourceCardId, state }) =
       slotId: sourceCard.slotId,
     },
   }
-  const now = {
-    ...state.now,
-    slots: {
-      ...slots,
-      [targetSlotId]: {
-        ...slots[targetSlotId],
-        cardId: sourceCardId,
-      },
-      ...newSlot,
+  const oldSlot = {
+    [targetId]: {
+      ...slots[targetId],
+      cardId: sourceId,
     },
-    cards: {
-      ...cards,
-      [sourceCardId]: {
-        ...cards[sourceCardId],
-        slotId: targetSlotId,
-      },
-      ...newCard,
+  }
+  const oldCard = {
+    [sourceId]: {
+      ...cards[sourceId],
+      slotId: targetId,
     },
   }
   return {
-    ...state,
-    now,
-    history: state.history.concat(state.now),
+    slots: {
+      ...slots,
+      ...newSlot,
+      ...oldSlot,
+    },
+    cards: {
+      ...cards,
+      ...newCard,
+      ...oldCard,
+    },
   }
 }
 
 const handleType = ({ targetId, sourceId, state }) => {
-  const newState = handleDrop({ targetId, sourceId, state })
+  const newState = state
+  const dropResuts = handleDrop({ targetId, sourceId, state })
   const { now } = newState
   return {
     ...newState,
     now: {
       ...now,
+      ...dropResuts,
       position: now.position + 1,
     },
   }
@@ -205,7 +206,16 @@ const reducer = (state = initialState, { type, payload }) => {
 
     case DROP: {
       const { sourceId, targetId } = payload
-      return handleDrop({ targetId, sourceId, state })
+      const dropResuts = handleDrop({ targetId, sourceId, state })
+
+      return {
+        ...state,
+        now: {
+          ...state.now,
+          ...dropResuts,
+        },
+        history: state.history.concat(state.now),
+      }
     }
 
     default: {
