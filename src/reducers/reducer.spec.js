@@ -3,9 +3,44 @@ import reducer, {
   initialState,
   markIt,
   wordSubmit,
+  storeHistory,
 } from './word'
 
 describe('reducers/word', () => {
+  describe('storeHistory', () => {
+    const beforeState = {
+      now: {
+        cards: 'cards',
+        slots: 'slots',
+      },
+      history: [],
+    }
+
+    const newState = {
+      cards: 'CARDS',
+      slots: 'SLOTS',
+    }
+
+    const actual = storeHistory(beforeState, newState)
+
+    const expected = {
+      now: {
+        cards: 'CARDS',
+        slots: 'SLOTS',
+      },
+      history: [
+        {
+          cards: 'cards',
+          slots: 'slots',
+        },
+      ],
+    }
+
+    it('stores beforeState in history and replaces now with newState', () => {
+      expect(actual).toEqual(expected)
+    })
+  })
+
   describe('other actions', () => {
     const action = { type: 'SOMETHING_ELSE' }
     const actual = reducer(initialState, action)
@@ -42,7 +77,7 @@ describe('reducers/word', () => {
           { letter: 't' },
           { letter: 'e' },
           { letter: 's' },
-          { letter: 't' }]
+          { letter: 't' }],
       }
       expect(actual.inputArray).toEqual(expected.inputArray)
     })
@@ -57,7 +92,7 @@ describe('reducers/word', () => {
       const actual = reducer(submit, action)
       const expected = {
         inputArray: [
-          { letter: 't', check: false }]
+          { letter: 't', check: false }],
       }
       expect(actual.inputArray).toEqual(expected.inputArray)
     })
@@ -68,11 +103,10 @@ describe('reducers/word', () => {
       const actual = reducer(submit, action)
       const expected = {
         inputArray: [
-          { letter: 'f', check: true }]
+          { letter: 'f', check: true }],
       }
       expect(actual.inputArray).toEqual(expected.inputArray)
     })
   })
-
-}
+},
 )

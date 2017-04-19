@@ -51,8 +51,20 @@ const dropIt = (sourceId, targetId) => ({
     targetId,
   },
 })
-const handleDrop = ({ targetId, sourceId, state }) => {
-  const { cards, slots } = state.now
+
+const storeHistory = (oldState, newState) => {
+  const { history, now } = oldState
+  return {
+    ...oldState,
+    now: {
+      ...now,
+      ...newState,
+    },
+    history: history.concat(now),
+  }
+}
+
+const handleDrop = ({ cards, slots }, { targetId, sourceId }) => {
   const sourceCard = { ...cards[sourceId] }
   const targetSlot = { ...slots[targetId] }
 
@@ -96,7 +108,7 @@ const handleDrop = ({ targetId, sourceId, state }) => {
 
 const handleType = ({ targetId, sourceId, state }) => {
   const newState = state
-  const dropResuts = handleDrop({ targetId, sourceId, state })
+  const dropResuts = handleDrop(state.now, { targetId, sourceId })
   const { now } = newState
   return {
     ...newState,
@@ -206,15 +218,13 @@ const reducer = (state = initialState, { type, payload }) => {
 
     case DROP: {
       const { sourceId, targetId } = payload
-      const dropResuts = handleDrop({ targetId, sourceId, state })
+      const { cards, slots } = handleDrop(state.now, { targetId, sourceId })
+      const { now, history } = storeHistory(state, { cards, slots })
 
       return {
         ...state,
-        now: {
-          ...state.now,
-          ...dropResuts,
-        },
-        history: state.history.concat(state.now),
+        now,
+        history,
       }
     }
 
@@ -231,6 +241,7 @@ export {
   deleteIt,
   dropIt,
   markIt,
+  storeHistory,
 }
 
 export default reducer
