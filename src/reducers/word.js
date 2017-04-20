@@ -124,6 +124,7 @@ const reducer = (state = initialState, { type, payload }) => {
       const { cards, position, slots } = state.now
       const available = pick(cards, map(slots, 'cardId').slice(position))
       const card = find(available, c => c.letter === letter)
+
       if (!card) {
         return state
       }

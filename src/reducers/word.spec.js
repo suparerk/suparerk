@@ -37,11 +37,11 @@ describe('reducers/word', () => {
   describe('dropIt(sourceId, targetId)', () => {
     const cards = {
       c1: {
-        title: 'd',
+        letter: 'd',
         slotId: 'c2',
       },
       c2: {
-        title: 'o',
+        letter: 'o',
         slotId: 'c1',
       },
     }
@@ -54,7 +54,7 @@ describe('reducers/word', () => {
       now: {
         slots,
         cards,
-      }
+      },
     }
     const action = dropIt('c1', 'c1')
     const actual = reducer(state, action)
@@ -63,11 +63,11 @@ describe('reducers/word', () => {
       const { now: { cards: movedCards } } = actual
       const expected = {
         c1: {
-          title: 'd',
+          letter: 'd',
           slotId: 'c1',
         },
         c2: {
-          title: 'o',
+          letter: 'o',
           slotId: 'c2',
         },
       }
@@ -83,50 +83,67 @@ describe('reducers/word', () => {
       expect(movedSlots).toEqual(expected)
     })
   })
-})
 
-describe('submit actions', () => {
-  const initial = reducer(initialState, initialize('family'))
-
-  it('return input array', () => {
-    const action = letterSubmit('test')
-    const actual = reducer(initial, action)
-    const expected = {
-      inputArray: [
-        { letter: 't' },
-        { letter: 'e' },
-        { letter: 's' },
-        { letter: 't' }],
+  describe('letterSubmit(letter)', () => {
+    const cards = {
+      c1: {
+        id: 'c1',
+        letter: 'd',
+        slotId: 'c2',
+      },
+      c2: {
+        id: 'c2',
+        letter: 'o',
+        slotId: 'c1',
+      },
     }
-    expect(actual.inputArray).toEqual(expected.inputArray)
-  })
-})
-
-describe('mark actions', () => {
-  const initial = reducer(initialState, initialize('family'))
-
-  it('return check false', () => {
-    const submit = reducer(initial, letterSubmit('t'))
-    const action = markIt()
-    const actual = reducer(submit, action)
-    const expected = {
-      inputArray: [
-        { letter: 't', check: false }],
+    const slots = {
+      c1: { id: 'c1', cardId: 'c2' },
+      c2: { id: 'c2', cardId: 'c1' },
     }
-    expect(actual.inputArray).toEqual(expected.inputArray)
-  })
-
-  it('return check true', () => {
-    const submit = reducer(initial, letterSubmit('f'))
-    const action = markIt()
-    const actual = reducer(submit, action)
-    const expected = {
-      inputArray: [
-        { letter: 'f', check: true }],
+    const state = {
+      ...initialState,
+      now: {
+        slots,
+        cards,
+        position: 0,
+      },
     }
-    expect(actual.inputArray).toEqual(expected.inputArray)
-  })
+    it('should not allow non available letter', () => {
+      const action = letterSubmit('z')
+      const actual = reducer(state, action)
+      const { now } = actual
+      expect(now).toEqual(state.now)
+    })
 
+    it('should update cards', () => {
+      const action = letterSubmit('d')
+      const actual = reducer(state, action)
+      const { now } = actual
+      const newCards = {
+        c1: {
+          id: 'c1',
+          letter: 'd',
+          slotId: 'c1',
+        },
+        c2: {
+          id: 'c2',
+          letter: 'o',
+          slotId: 'c2',
+        },
+      }
+      const newSlots = {
+        c1: { id: 'c1', cardId: 'c1' },
+        c2: { id: 'c2', cardId: 'c2' },
+      }
+      const expected = {
+        cards: newCards,
+        slots: newSlots,
+        position: 1,
+      }
+      expect(now).toEqual(expected)
+    })
+  })
 
   describe('everything else', () => {
     const action = { type: 'SOMETHING_ELSE' }
