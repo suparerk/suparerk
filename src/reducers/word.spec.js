@@ -171,14 +171,100 @@ describe('reducers/word', () => {
       },
       history: [],
     }
+    const submitAction = letterSubmit('d')
+    const newState = reducer(state, submitAction)
+
+    const action = deleteIt()
+    const actual = reducer(newState, action)
+
     it('should go back one step', () => {
-      const submitAction = letterSubmit('d')
-      const newState = reducer(state, submitAction)
-
-      const action = deleteIt()
-      const actual = reducer(newState, action)
-
       expect(actual.history).toEqual([])
+    })
+  })
+
+  describe(markIt, () => {
+    it('should return false', () => {
+      const state = {
+        now: {
+          cards: {
+            a0: {
+              id: 'a0',
+              letter: 'o',
+              slotId: 'a0',
+            },
+            a1: {
+              id: 'a1',
+              letter: 'd',
+              slotId: 'a1',
+            },
+          },
+          slots: {
+            a0: { id: 'a0', cardId: 'a0' },
+            a1: { id: 'a1', cardId: 'a1' },
+          },
+        },
+        originalWord: 'do',
+      }
+      const action = markIt()
+      const actual = reducer(state, action)
+      const { now: { cards } } = actual
+      const expected = {
+        a0: {
+          id: 'a0',
+          letter: 'o',
+          slotId: 'a0',
+          state: false,
+        },
+        a1: {
+          id: 'a1',
+          letter: 'd',
+          slotId: 'a1',
+          state: false,
+        },
+      }
+      expect(cards).toEqual(expected)
+    })
+
+    it('should return true', () => {
+      const state = {
+        now: {
+          cards: {
+            a0: {
+              id: 'a0',
+              letter: 'o',
+              slotId: 'a1',
+            },
+            a1: {
+              id: 'a1',
+              letter: 'd',
+              slotId: 'a0',
+            },
+          },
+          slots: {
+            a0: { id: 'a0', cardId: 'a1' },
+            a1: { id: 'a1', cardId: 'a0' },
+          },
+        },
+        originalWord: 'do',
+      }
+      const action = markIt()
+      const actual = reducer(state, action)
+      const { now: { cards } } = actual
+      const expected = {
+        a0: {
+          id: 'a0',
+          letter: 'o',
+          slotId: 'a1',
+          state: true,
+        },
+        a1: {
+          id: 'a1',
+          letter: 'd',
+          slotId: 'a0',
+          state: true,
+        },
+      }
+      expect(cards).toEqual(expected)
     })
   })
   describe('everything else', () => {
