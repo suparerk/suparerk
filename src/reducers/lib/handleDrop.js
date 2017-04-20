@@ -1,7 +1,6 @@
 const handleDrop = ({ cards, slots }, { targetId, sourceId }) => {
-  const sourceCard = cards[sourceId]
-  const targetSlot = slots[targetId]
-
+  const sourceCard = { ...cards[sourceId] }
+  const targetSlot = { ...slots[targetId] }
   const newSlot = sourceCard.slotId && {
     [sourceCard.slotId]: {
       ...slots[sourceCard.slotId],
@@ -26,7 +25,7 @@ const handleDrop = ({ cards, slots }, { targetId, sourceId }) => {
       slotId: targetId,
     },
   }
-  return {
+  const newState = {
     slots: {
       ...slots,
       ...newSlot,
@@ -38,6 +37,8 @@ const handleDrop = ({ cards, slots }, { targetId, sourceId }) => {
       ...oldCard,
     },
   }
+
+  return newState
 }
 
 export default handleDrop

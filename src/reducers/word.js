@@ -67,25 +67,43 @@ const handleType = ({ targetId, sourceId, state }) => {
 }
 
 const createCard = (a, letter, index) => {
-  const theIndex = `a${index}`
+  const theIndex = `c-${letter}-${index}`
   return {
     ...a,
     [theIndex]: {
       id: theIndex,
       letter,
       state: undefined,
-      placeId: theIndex,
     },
   }
 }
 
-const createPlace = (a, letter, index) => {
-  const theIndex = `a${index}`
-  return {
-    ...a,
+const createSlot = (a, letter, index) => {
+  const { slots, cards } = a
+  const theIndex = `s-${letter}-${index}`
+  const card = cards[Object.keys(cards)[index]]
+  const newSlot = {
     [theIndex]: {
       id: theIndex,
-      cardId: theIndex,
+      cardId: card.id,
+    },
+  }
+  const newCard = {
+    [card.id]: {
+      ...card,
+      slotId: theIndex,
+    },
+  }
+
+  return {
+    ...a,
+    slots: {
+      ...slots,
+      ...newSlot,
+    },
+    cards: {
+      ...cards,
+      ...newCard,
     },
   }
 }
@@ -94,15 +112,15 @@ const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case INIT: {
       const { originalWord } = payload
-      const shuffled = shuffle(originalWord.split(''))
-      const cardsObject = shuffled.reduce(createCard, {})
-      const placeObject = shuffled.reduce(createPlace, {})
+      const splitWord = originalWord.split('')
+      const initialCards = shuffle(splitWord).reduce(createCard, {})
+      const { cards, slots } = splitWord.reduce(createSlot, { cards: initialCards, slots: {} })
       return {
         ...initialState,
         now: {
-          ...state.now,
-          cards: cardsObject,
-          places: placeObject,
+          ...initialState.now,
+          cards,
+          slots,
         },
         originalWord,
       }
