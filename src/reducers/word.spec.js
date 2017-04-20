@@ -116,7 +116,7 @@ describe('reducers/word', () => {
       expect(now).toEqual(state.now)
     })
 
-    it('should update cards', () => {
+    it('should update cards, slots, and position', () => {
       const action = letterSubmit('d')
       const actual = reducer(state, action)
       const { now } = actual
@@ -145,6 +145,42 @@ describe('reducers/word', () => {
     })
   })
 
+  describe('deleteIt', () => {
+    const cards = {
+      c1: {
+        id: 'c1',
+        letter: 'd',
+        slotId: 'c2',
+      },
+      c2: {
+        id: 'c2',
+        letter: 'o',
+        slotId: 'c1',
+      },
+    }
+    const slots = {
+      c1: { id: 'c1', cardId: 'c2' },
+      c2: { id: 'c2', cardId: 'c1' },
+    }
+    const state = {
+      ...initialState,
+      now: {
+        slots,
+        cards,
+        position: 0,
+      },
+      history: [],
+    }
+    it('should go back one step', () => {
+      const submitAction = letterSubmit('d')
+      const newState = reducer(state, submitAction)
+
+      const action = deleteIt()
+      const actual = reducer(newState, action)
+
+      expect(actual.history).toEqual([])
+    })
+  })
   describe('everything else', () => {
     const action = { type: 'SOMETHING_ELSE' }
     const actual = reducer(initialState, action)
