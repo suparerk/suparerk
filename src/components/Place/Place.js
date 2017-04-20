@@ -10,7 +10,7 @@ const propTypes = {
 
 const canDropCard = () => true
 
-const slotTarget = {
+const placeTarget = {
   canDrop(props, monitor) {
     // const item = monitor.getItem()
     return canDropCard()
@@ -31,12 +31,12 @@ function collect(connect, monitor) {
 }
 
 
-class Slot extends Component {
+class Place extends Component {
   render() {
     const { connectDropTarget } = this.props
     return connectDropTarget(
       <div>
-        <div className="flex slot">
+        <div className="flex place">
           {this.props.children}
         </div>
       </div>
@@ -44,7 +44,7 @@ class Slot extends Component {
   }
 }
 
-Slot.propTypes = propTypes
+Place.propTypes = propTypes
 
 
-export default DropTarget(CARD, slotTarget, collect)(Slot)
+export default DropTarget(CARD, placeTarget, collect)(Place)

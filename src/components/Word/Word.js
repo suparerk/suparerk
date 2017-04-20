@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import Card from '../Card'
-import Slot from '../Slot'
+import Place from '../Place'
 
 const { object } = PropTypes
 
@@ -14,27 +14,27 @@ const defaultProps = {
 
 class Word extends Component {
   render() {
-    const { cards, move, slots, position } = this.props
+    const { cards, move, places, position } = this.props
     return (
       <div className="App w3-content w3-padding-128">
         {/* {JSON.stringify(completed)} */}
         <hr />
         <div className="flex">
           {
-            Object.keys(slots).map((id, index) => {
-              const slot = slots[id]
+            Object.keys(places).map((id, index) => {
+              const place = places[id]
               return (
-                <Slot
+                <Place
                   key={id}
-                  {...slot}
+                  {...place}
                   onMove={({ sourceId, targetId }) =>
                   move(sourceId, targetId)}
                 >
                   <Card
                     active={index < position}
-                    {...cards[slot.cardId]}
+                    {...cards[place.cardId]}
                   />
-                </Slot>
+                </Place>
               )
             })
           }
