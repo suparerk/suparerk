@@ -107,16 +107,15 @@ const handleDrop = ({ cards, slots }, { targetId, sourceId }) => {
 }
 
 const handleType = ({ targetId, sourceId, state }) => {
-  const newState = state
-  const dropResuts = handleDrop(state.now, { targetId, sourceId })
-  const { now } = newState
+  const { cards, slots } = handleDrop(state.now, { targetId, sourceId })
+  const { now, history } = storeHistory(state, { cards, slots })
   return {
-    ...newState,
+    ...state,
     now: {
       ...now,
-      ...dropResuts,
       position: now.position + 1,
     },
+    history,
   }
 }
 
@@ -151,7 +150,6 @@ const reducer = (state = initialState, { type, payload }) => {
     case INIT: {
       const { originalWord } = payload
       const shuffled = shuffle(originalWord.split(''))
-
       const cardsObject = shuffled.reduce(createCard, {})
       const slotObject = shuffled.reduce(createSlot, {})
       return {
