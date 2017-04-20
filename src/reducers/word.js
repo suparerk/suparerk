@@ -2,13 +2,13 @@ import find from 'lodash/find'
 import pick from 'lodash/pick'
 import map from 'lodash/map'
 import shuffle from 'lodash/shuffle'
+import { handleDrop, storeHistory } from './lib'
 
 const INIT = 'init/INIT'
 const DELETE = 'delete/DELETE'
 const MARK = 'mark/MARK'
 const SUBMIT = 'submit/SUBMIT'
 const DROP = 'drop/DROP'
-
 
 const initialState = {
   now: {
@@ -52,60 +52,6 @@ const dropIt = (sourceId, targetId) => ({
   },
 })
 
-const storeHistory = (oldState, newState) => {
-  const { history, now } = oldState
-  return {
-    ...oldState,
-    now: {
-      ...now,
-      ...newState,
-    },
-    history: history.concat(now),
-  }
-}
-
-const handleDrop = ({ cards, slots }, { targetId, sourceId }) => {
-  const sourceCard = { ...cards[sourceId] }
-  const targetSlot = { ...slots[targetId] }
-
-  const newSlot = sourceCard.slotId && {
-    [sourceCard.slotId]: {
-      ...slots[sourceCard.slotId],
-      cardId: targetSlot.cardId,
-    },
-  }
-  const newCard = targetSlot.cardId && {
-    [targetSlot.cardId]: {
-      ...cards[targetSlot.cardId],
-      slotId: sourceCard.slotId,
-    },
-  }
-  const oldSlot = {
-    [targetId]: {
-      ...slots[targetId],
-      cardId: sourceId,
-    },
-  }
-  const oldCard = {
-    [sourceId]: {
-      ...cards[sourceId],
-      slotId: targetId,
-    },
-  }
-  return {
-    slots: {
-      ...slots,
-      ...newSlot,
-      ...oldSlot,
-    },
-    cards: {
-      ...cards,
-      ...newCard,
-      ...oldCard,
-    },
-  }
-}
-
 const handleType = ({ targetId, sourceId, state }) => {
   const { cards, slots } = handleDrop(state.now, { targetId, sourceId })
   const { now, history } = storeHistory(state, { cards, slots })
@@ -123,8 +69,7 @@ const createCard = (a, letter, index) => {
   const theIndex = `a${index}`
   return {
     ...a,
-    [theIndex]:
-    {
+    [theIndex]: {
       id: theIndex,
       letter,
       state: undefined,
@@ -137,8 +82,7 @@ const createSlot = (a, letter, index) => {
   const theIndex = `a${index}`
   return {
     ...a,
-    [theIndex]:
-    {
+    [theIndex]: {
       id: theIndex,
       cardId: theIndex,
     },
@@ -163,16 +107,31 @@ const reducer = (state = initialState, { type, payload }) => {
       }
     }
 
+    case DROP: {
+      const { sourceId, targetId } = payload
+      const { cards, slots } = handleDrop(state.now, { targetId, sourceId })
+      const { now, history } = storeHistory(state, { cards, slots })
+
+      return {
+        ...state,
+        now,
+        history,
+      }
+    }
+
     case SUBMIT: {
       const { letter } = payload
       const { cards, position, slots } = state.now
       const available = pick(cards, map(slots, 'cardId').slice(position))
       const card = find(available, c => c.letter === letter)
-      if (!card) { return state }
+      if (!card) {
+        return state
+      }
       const sourceId = card.id
       const targetId = slots[Object.keys(slots)[position]].id
       return handleType({ targetId, sourceId, state })
     }
+
     case DELETE: {
       const { history: oldHistory } = state
       const now = oldHistory.slice(-1)[0]
@@ -214,32 +173,12 @@ const reducer = (state = initialState, { type, payload }) => {
       }
     }
 
-    case DROP: {
-      const { sourceId, targetId } = payload
-      const { cards, slots } = handleDrop(state.now, { targetId, sourceId })
-      const { now, history } = storeHistory(state, { cards, slots })
-
-      return {
-        ...state,
-        now,
-        history,
-      }
-    }
-
     default: {
       return state
     }
   }
 }
 
-export {
-  initialize,
-  initialState,
-  letterSubmit,
-  deleteIt,
-  dropIt,
-  markIt,
-  storeHistory,
-}
+export { initialState, initialize, letterSubmit, deleteIt, dropIt, markIt }
 
 export default reducer
