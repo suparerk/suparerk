@@ -1,62 +1,65 @@
-import handleDrop from './handleDrop'
+import moveCard from './moveCard'
 
-fdescribe('handleDrop', () => {
+describe('moveCard', () => {
   const cards = {
     c1: {
       id: 'c1',
       title: 'card1',
-      slotId: 's2',
+      placeId: 'c2',
     },
     c2: {
       id: 'c2',
       title: 'card2',
-      slotId: 's1',
+      placeId: 'c1',
     },
   }
 
-  const slots = {
-    s1: {
-      id: 's1',
+  const places = {
+    c1: {
+      id: 'c1',
       cardId: 'c2',
     },
-    s2: {
-      id: 's2',
+    c2: {
+      id: 'c2',
       cardId: 'c1',
     },
   }
 
-  const actual = handleDrop(
-    { cards, slots },
-    { targetId: 's1', sourceId: 'c1' },
-  )
- 
+  const state = {
+    cards,
+    places,
+  }
+
+  const actual = moveCard(state, 'c1', 'c1')
+
+
   it('should update cards correctly', () => {
     const { cards: movedCards } = actual
     const expected = {
       c1: {
         ...cards.c1,
-        slotId: 's1',
+        placeId: 'c1',
       },
       c2: {
         ...cards.c2,
-        slotId: 's2',
+        placeId: 'c2',
       },
     }
     expect(movedCards).toEqual(expected)
   })
 
-  it('should update slots correctly', () => {
-    const { slots: movedSlots } = actual
+  it('should update places correctly', () => {
+    const { places: movedPlaces } = actual
     const expected = {
-      s1: {
-        ...slots.s1,
+      c1: {
+        ...places.c1,
         cardId: 'c1',
       },
-      s2: {
-        ...slots.s2,
+      c2: {
+        ...places.c2,
         cardId: 'c2',
       },
     }
-    expect(movedSlots).toEqual(expected)
+    expect(movedPlaces).toEqual(expected)
   })
 })

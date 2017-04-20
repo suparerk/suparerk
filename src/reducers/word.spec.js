@@ -24,35 +24,37 @@ describe('reducers/word', () => {
       expect(cardsLetters).toEqual(['d', 'o'])
     })
 
-    it('stores cards in slots', () => {
-      const { now: { cards, slots } } = actual
-      const slotsLetters = map(slots, 'cardId')
+    it('stores cards in places', () => {
+      const { now: { cards, places } } = actual
+      const placesLetters = map(places, 'cardId')
         .map(id => cards[id])
         .map(c => c.letter)
         .sort()
-      expect(slotsLetters).toEqual(['d', 'o'])
+      expect(placesLetters).toEqual(['d', 'o'])
     })
   })
 
   describe('dropIt(sourceId, targetId)', () => {
     const cards = {
       c1: {
+        id: 'c1',
         letter: 'd',
-        slotId: 'c2',
+        placeId: 'c2',
       },
       c2: {
+        id: 'c2',
         letter: 'o',
-        slotId: 'c1',
+        placeId: 'c1',
       },
     }
-    const slots = {
-      c1: { cardId: 'c2' },
-      c2: { cardId: 'c1' },
+    const places = {
+      c1: { id: 'c1', cardId: 'c2' },
+      c2: { id: 'c2', cardId: 'c1' },
     }
     const state = {
       ...initialState,
       now: {
-        slots,
+        places,
         cards,
       },
     }
@@ -63,24 +65,26 @@ describe('reducers/word', () => {
       const { now: { cards: movedCards } } = actual
       const expected = {
         c1: {
+          id: 'c1',
           letter: 'd',
-          slotId: 'c1',
+          placeId: 'c1',
         },
         c2: {
+          id: 'c2',
           letter: 'o',
-          slotId: 'c2',
+          placeId: 'c2',
         },
       }
       expect(movedCards).toEqual(expected)
     })
 
-    it('should update slots', () => {
-      const { now: { slots: movedSlots } } = actual
+    it('should update places', () => {
+      const { now: { places: movedPlaces } } = actual
       const expected = {
-        c1: { cardId: 'c1' },
-        c2: { cardId: 'c2' },
+        c1: { id: 'c1', cardId: 'c1' },
+        c2: { id: 'c2', cardId: 'c2' },
       }
-      expect(movedSlots).toEqual(expected)
+      expect(movedPlaces).toEqual(expected)
     })
   })
 
@@ -89,22 +93,22 @@ describe('reducers/word', () => {
       c1: {
         id: 'c1',
         letter: 'd',
-        slotId: 'c2',
+        placeId: 'c2',
       },
       c2: {
         id: 'c2',
         letter: 'o',
-        slotId: 'c1',
+        placeId: 'c1',
       },
     }
-    const slots = {
+    const places = {
       c1: { id: 'c1', cardId: 'c2' },
       c2: { id: 'c2', cardId: 'c1' },
     }
     const state = {
       ...initialState,
       now: {
-        slots,
+        places,
         cards,
         position: 0,
       },
@@ -116,7 +120,7 @@ describe('reducers/word', () => {
       expect(now).toEqual(state.now)
     })
 
-    it('should update cards, slots, and position', () => {
+    it('should update cards, places, and position', () => {
       const action = letterSubmit('d')
       const actual = reducer(state, action)
       const { now } = actual
@@ -124,21 +128,21 @@ describe('reducers/word', () => {
         c1: {
           id: 'c1',
           letter: 'd',
-          slotId: 'c1',
+          placeId: 'c1',
         },
         c2: {
           id: 'c2',
           letter: 'o',
-          slotId: 'c2',
+          placeId: 'c2',
         },
       }
-      const newSlots = {
+      const newPlaces = {
         c1: { id: 'c1', cardId: 'c1' },
         c2: { id: 'c2', cardId: 'c2' },
       }
       const expected = {
         cards: newCards,
-        slots: newSlots,
+        places: newPlaces,
         position: 1,
       }
       expect(now).toEqual(expected)
@@ -150,22 +154,22 @@ describe('reducers/word', () => {
       c1: {
         id: 'c1',
         letter: 'd',
-        slotId: 'c2',
+        placeId: 'c2',
       },
       c2: {
         id: 'c2',
         letter: 'o',
-        slotId: 'c1',
+        placeId: 'c1',
       },
     }
-    const slots = {
+    const places = {
       c1: { id: 'c1', cardId: 'c2' },
       c2: { id: 'c2', cardId: 'c1' },
     }
     const state = {
       ...initialState,
       now: {
-        slots,
+        places,
         cards,
         position: 0,
       },
@@ -190,15 +194,15 @@ describe('reducers/word', () => {
             a0: {
               id: 'a0',
               letter: 'o',
-              slotId: 'a0',
+              placeId: 'a0',
             },
             a1: {
               id: 'a1',
               letter: 'd',
-              slotId: 'a1',
+              placeId: 'a1',
             },
           },
-          slots: {
+          places: {
             a0: { id: 'a0', cardId: 'a0' },
             a1: { id: 'a1', cardId: 'a1' },
           },
@@ -212,13 +216,13 @@ describe('reducers/word', () => {
         a0: {
           id: 'a0',
           letter: 'o',
-          slotId: 'a0',
+          placeId: 'a0',
           state: false,
         },
         a1: {
           id: 'a1',
           letter: 'd',
-          slotId: 'a1',
+          placeId: 'a1',
           state: false,
         },
       }
@@ -232,15 +236,15 @@ describe('reducers/word', () => {
             a0: {
               id: 'a0',
               letter: 'o',
-              slotId: 'a1',
+              placeId: 'a1',
             },
             a1: {
               id: 'a1',
               letter: 'd',
-              slotId: 'a0',
+              placeId: 'a0',
             },
           },
-          slots: {
+          places: {
             a0: { id: 'a0', cardId: 'a1' },
             a1: { id: 'a1', cardId: 'a0' },
           },
@@ -254,13 +258,13 @@ describe('reducers/word', () => {
         a0: {
           id: 'a0',
           letter: 'o',
-          slotId: 'a1',
+          placeId: 'a1',
           state: true,
         },
         a1: {
           id: 'a1',
           letter: 'd',
-          slotId: 'a0',
+          placeId: 'a0',
           state: true,
         },
       }

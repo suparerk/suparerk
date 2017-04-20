@@ -5,14 +5,14 @@ describe('storeHistory', () => {
   const beforeState = {
     now: {
       cards: 'cards',
-      slots: 'slots',
+      places: 'places',
     },
     history: [],
   }
 
   const newState = {
     cards: 'CARDS',
-    slots: 'SLOTS',
+    places: 'SLOTS',
   }
 
   const actual = storeHistory(beforeState, newState)
@@ -22,12 +22,12 @@ describe('storeHistory', () => {
     const expected = {
       now: {
         cards: 'CARDS',
-        slots: 'SLOTS',
+        places: 'SLOTS',
       },
       history: [
         {
           cards: 'cards',
-          slots: 'slots',
+          places: 'places',
         },
       ],
     }
