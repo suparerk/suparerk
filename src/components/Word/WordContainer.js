@@ -7,19 +7,18 @@ import { DragDropContext } from 'react-dnd'
 import * as wordActions from '../../reducers/word'
 import Word from './Word'
 
-const { array, bool, func, object, string } = PropTypes
+const { bool, func, number, object, string } = PropTypes
 const propTypes = {
-  available: array.isRequired,
   cards: object.isRequired,
   completed: bool,
   deleteIt: func.isRequired,
   dropIt: func.isRequired,
   initialize: func.isRequired,
+  position: number.isRequired,
   letterSubmit: func.isRequired,
   markIt: func.isRequired,
   originalWord: string.isRequired,
-  placed: array.isRequired,
-  slots: object.isRequired,
+  places: object.isRequired,
 }
 
 const defaultProps = {
@@ -48,16 +47,15 @@ class WordContainer extends React.Component {
   }
 
   render() {
-    const { cards, placed, available, completed, dropIt, slots } = this.props
+    const { cards, completed, dropIt, position, places } = this.props
 
     return (
       <Word
         cards={cards}
-        available={available}
-        placed={placed}
         completed={completed}
         move={dropIt}
-        slots={slots}
+        position={position}
+        places={places}
       />
     )
   }
