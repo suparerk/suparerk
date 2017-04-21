@@ -18,7 +18,7 @@ const propTypes = {
   letterSubmit: func.isRequired,
   markIt: func.isRequired,
   originalWord: string.isRequired,
-  slots: object.isRequired,
+  places: object.isRequired,
 }
 
 const defaultProps = {
@@ -47,7 +47,7 @@ class WordContainer extends React.Component {
   }
 
   render() {
-    const { cards, completed, dropIt, position, slots } = this.props
+    const { cards, completed, dropIt, position, places } = this.props
 
     return (
       <Word
@@ -55,7 +55,7 @@ class WordContainer extends React.Component {
         completed={completed}
         move={dropIt}
         position={position}
-        slots={slots}
+        places={places}
       />
     )
   }
