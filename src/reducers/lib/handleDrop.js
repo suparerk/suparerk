@@ -1,35 +1,35 @@
-const handleDrop = ({ cards, slots }, { targetId, sourceId }) => {
+const handleDrop = ({ cards, places }, { targetId, sourceId }) => {
   const sourceCard = { ...cards[sourceId] }
-  const targetSlot = { ...slots[targetId] }
-  const newSlot = sourceCard.slotId && {
-    [sourceCard.slotId]: {
-      ...slots[sourceCard.slotId],
-      cardId: targetSlot.cardId,
+  const targetPlace = { ...places[targetId] }
+  const newPlace = sourceCard.placeId && {
+    [sourceCard.placeId]: {
+      ...places[sourceCard.placeId],
+      cardId: targetPlace.cardId,
     },
   }
-  const newCard = targetSlot.cardId && {
-    [targetSlot.cardId]: {
-      ...cards[targetSlot.cardId],
-      slotId: sourceCard.slotId,
+  const newCard = targetPlace.cardId && {
+    [targetPlace.cardId]: {
+      ...cards[targetPlace.cardId],
+      placeId: sourceCard.placeId,
     },
   }
-  const oldSlot = {
+  const oldPlace = {
     [targetId]: {
-      ...slots[targetId],
+      ...places[targetId],
       cardId: sourceId,
     },
   }
   const oldCard = {
     [sourceId]: {
       ...cards[sourceId],
-      slotId: targetId,
+      placeId: targetId,
     },
   }
   const newState = {
-    slots: {
-      ...slots,
-      ...newSlot,
-      ...oldSlot,
+    places: {
+      ...places,
+      ...newPlace,
+      ...oldPlace,
     },
     cards: {
       ...cards,

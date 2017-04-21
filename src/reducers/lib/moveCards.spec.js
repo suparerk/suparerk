@@ -1,4 +1,4 @@
-import handleDrop from './handleDrop'
+import movedCards from './moveCards'
 
 describe('handleDrop', () => {
   const cards = {
@@ -25,24 +25,28 @@ describe('handleDrop', () => {
     },
   }
 
-  const actual = handleDrop(
-    { cards, places },
-    { targetId: 's1', sourceId: 'c1' },
-  )
+  const state = {
+    cards,
+    places,
+  }
+
+  const actual = movedCards(state, 'c1', 's1')
 
   it('should update cards correctly', () => {
-    const { cards: movedCards } = actual
+    // const { cards: movedCards } = actual
     const expected = {
       c1: {
         ...cards.c1,
         placeId: 's1',
+        title: 'card1',
       },
       c2: {
         ...cards.c2,
         placeId: 's2',
+        title: 'card2',
       },
     }
-    expect(movedCards).toEqual(expected)
+    expect(actual.cards).toEqual(expected)
   })
 
   it('should update places correctly', () => {
